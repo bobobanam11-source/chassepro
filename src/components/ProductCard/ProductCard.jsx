@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Heart, ShoppingCart, Star, Eye } from "lucide-react";
 import { useCart } from "../../context/CartContext";
 
@@ -17,16 +17,20 @@ export default function ProductCard({ product }) {
   const { addToCart } = useCart();
   const navigate = useNavigate();
 
-  const handleOrder = (e) => {
-    e.preventDefault();
-    navigate("/commander", { state: { product } });
-  };
-
   const handleAdd = (e) => {
-    e.preventDefault();
+    e.stopPropagation();
     addToCart(product, product.tailles[0] || "", product.couleurs[0] || "", 1);
     setAdded(true);
     setTimeout(() => setAdded(false), 1800);
+  };
+
+  const handleOrder = (e) => {
+    e.stopPropagation();
+    navigate("/commander", { state: { product } });
+  };
+
+  const handleCardClick = () => {
+    navigate(`/produit/${product.id}`);
   };
 
   const discount = product.prixBarre
@@ -34,8 +38,8 @@ export default function ProductCard({ product }) {
     : null;
 
   return (
-    <Link
-      to={`/produit/${product.id}`}
+    <div
+      onClick={handleCardClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
@@ -45,7 +49,7 @@ export default function ProductCard({ product }) {
         borderRadius: 16,
         overflow: "hidden",
         border: "1px solid #EFEFEF",
-        textDecoration: "none",
+        cursor: "pointer",
         height: "100%",
         boxShadow: hovered
           ? "0 16px 48px rgba(0,0,0,0.11)"
@@ -72,7 +76,6 @@ export default function ProductCard({ product }) {
                 display: "block",
               }}
             />
-            {/* Overlay léger au hover */}
             <div
               style={{
                 position: "absolute",
@@ -84,7 +87,6 @@ export default function ProductCard({ product }) {
             />
           </>
         ) : (
-          // Fallback si pas d'image
           <div
             style={{
               width: "100%",
@@ -151,7 +153,7 @@ export default function ProductCard({ product }) {
           }}
         >
           <button
-            onClick={(e) => { e.preventDefault(); setLiked(!liked); }}
+            onClick={(e) => { e.stopPropagation(); setLiked(!liked); }}
             style={{
               width: 34, height: 34, borderRadius: 9,
               background: "rgba(255,255,255,0.95)",
@@ -174,15 +176,18 @@ export default function ProductCard({ product }) {
           </div>
         </div>
 
-        {/* Bouton panier hover bas */}
+        {/* Boutons hover bas */}
         <div
           style={{
             position: "absolute",
             bottom: 0, left: 0, right: 0,
             padding: "10px 12px",
-            background: "linear-gradient(0deg, rgba(0,0,0,0.7) 0%, transparent 100%)",
+            background: "linear-gradient(0deg, rgba(0,0,0,0.75) 0%, transparent 100%)",
             transform: hovered ? "translateY(0)" : "translateY(100%)",
             transition: "transform 0.3s ease",
+            display: "flex",
+            flexDirection: "column",
+            gap: 6,
           }}
         >
           <button
@@ -194,7 +199,6 @@ export default function ProductCard({ product }) {
               display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
               background: added ? "#22C55E" : "#E07B2A",
               color: "#fff", transition: "background 0.2s",
-              marginBottom: 6,
             }}
           >
             <ShoppingCart size={14} />
@@ -255,6 +259,6 @@ export default function ProductCard({ product }) {
           )}
         </div>
       </div>
-    </Link>
+    </div>
   );
 }

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Trash2, Minus, Plus, ShoppingBag, ArrowLeft, Shield, Truck } from "lucide-react";
 import { useCart } from "../../context/CartContext";
 
@@ -7,6 +7,7 @@ const LIVRAISON_OFFERTE_SEUIL = 50;
 
 export default function Cart() {
   const { items, removeFromCart, updateQuantity, total, count } = useCart();
+  const navigate = useNavigate();
 
   const livraison = total >= LIVRAISON_OFFERTE_SEUIL ? 0 : LIVRAISON;
   const totalTTC = total + livraison;
@@ -175,7 +176,10 @@ export default function Cart() {
                 </div>
               </div>
 
-              <button className="w-full bg-orange hover:bg-orange-dark text-white font-bold py-4 rounded-xl transition-colors shadow-lg hover:shadow-orange/30 mb-3">
+              <button
+                onClick={() => navigate("/commander")}
+                className="w-full bg-orange hover:bg-orange-dark text-white font-bold py-4 rounded-xl transition-colors shadow-lg hover:shadow-orange/30 mb-3"
+              >
                 Commander →
               </button>
 
