@@ -94,7 +94,7 @@ export default function Navbar() {
                 transition: "color 0.3s",
               }}
             >
-              ChassePro
+              Garminchasse
             </span>
           </Link>
 

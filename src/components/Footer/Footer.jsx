@@ -46,7 +46,7 @@ export default function Footer() {
                 color: "white",
               }}
             >
-              ChassePro
+              Garminchasse
             </span>
           </div>
           <p style={{ color: "rgba(245,240,232,0.5)", fontSize: 13, lineHeight: 1.7, marginBottom: 20, maxWidth: 220 }}>
@@ -158,7 +158,7 @@ export default function Footer() {
             {[
               { Icon: MapPin, text: "12 Rue de la Forêt\n75008 Paris, France" },
               { Icon: Phone, text: "+33 1 23 45 67 89" },
-              { Icon: Mail, text: "contact@chassepro.fr" },
+              { Icon: Mail, text: "contact@garminchasse.fr" },
             ].map(({ Icon, text }) => (
               <div key={text} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
                 <Icon size={15} style={{ color: "#E07B2A", flexShrink: 0, marginTop: 1 }} />
@@ -201,7 +201,7 @@ export default function Footer() {
         }}
       >
         <p style={{ color: "rgba(245,240,232,0.3)", fontSize: 12 }}>
-          © 2025 ChassePro — Tous droits réservés
+          © 2025 Garminchasse — Tous droits réservés
         </p>
         <div style={{ display: "flex", gap: 8 }}>
           {["VISA", "Mastercard", "PayPal", "Alma"].map((brand) => (
