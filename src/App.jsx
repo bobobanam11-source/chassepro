@@ -35,8 +35,10 @@ function WhatsAppButton() {
       onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
     >
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 18v-6a9 9 0 0 1 18 0v6"/>
-        <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        <line x1="9" y1="10" x2="9" y2="10" strokeWidth="3" strokeLinecap="round"/>
+        <line x1="12" y1="10" x2="12" y2="10" strokeWidth="3" strokeLinecap="round"/>
+        <line x1="15" y1="10" x2="15" y2="10" strokeWidth="3" strokeLinecap="round"/>
       </svg>
     </a>
   );
