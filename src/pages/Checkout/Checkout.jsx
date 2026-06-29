@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { MapPin, Phone, User, Tag, CheckCircle, ChevronDown } from "lucide-react";
+import { useSettings } from "../../context/SettingsContext";
+import { useCart } from "../../context/CartContext";
 
 const DEPARTEMENTS = [
   "01 - Ain", "02 - Aisne", "03 - Allier", "04 - Alpes-de-Haute-Provence",
@@ -54,8 +56,9 @@ const inputStyle = {
 
 export default function Checkout() {
   const location = useLocation();
-  const navigate = useNavigate();
   const product = location.state?.product || null;
+  const { settings } = useSettings();
+  const { items, total, clearCart } = useCart ? useCart() : { items: [], total: 0, clearCart: () => {} };
 
   const [form, setForm] = useState({
     prenom: "", nom: "", adresse: "", ville: "",
@@ -69,6 +72,20 @@ export default function Checkout() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const number = settings?.whatsapp_number || "33757754353";
+    const produits = product
+      ? [{ nom: product.nom, prix: product.prix, taille: "", couleur: "", quantite: 1 }]
+      : items.map((i) => ({ nom: i.nom, prix: i.prix, taille: i.taille || "", couleur: i.couleur || "", quantite: i.quantite }));
+
+    const lignes = produits.map((p) =>
+      `🛍️ Produit : ${p.nom}\n💰 Prix : ${p.prix} €${p.couleur ? `\n🎨 Couleur : ${p.couleur}` : ""}${p.taille ? `\n📏 Taille : ${p.taille}` : ""}\n🔢 Quantité : ${p.quantite}`
+    ).join("\n\n");
+
+    const message = `Bonjour, je souhaite commander :\n\n${lignes}\n\n📍 Adresse : ${form.prenom} ${form.nom}, ${form.adresse}, ${form.ville} ${form.codePostal}\n📞 Tél : ${form.telephone}${form.codeParrainage ? `\n🎁 Code : ${form.codeParrainage}` : ""}\n\nMerci !`;
+
+    try { fetch(`${import.meta.env.VITE_API_URL || "http://localhost:4000/api"}/commandes`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ produit_id: product?.id || null, nom_produit: produits.map((p) => p.nom).join(", "), prix: product?.prix || total, quantite: 1 }) }); } catch {}
+
+    window.open(`https://wa.me/${number}?text=${encodeURIComponent(message)}`, "_blank");
     setDone(true);
   };
 

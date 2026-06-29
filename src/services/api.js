@@ -1,25 +1,11 @@
-// TODO: connecter au backend Node.js/Express
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
 
-// Produits
-export const getProducts = async (filters = {}) => {};
-export const getProductById = async (id) => {};
-export const getProductsByCategory = async (category) => {};
-export const searchProducts = async (query) => {};
+const get = (url) => fetch(`${BASE}${url}`).then((r) => r.json());
+const authHeaders = () => ({ "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("admin_token")}` });
+const post = (url, body) => fetch(`${BASE}${url}`, { method: "POST", headers: authHeaders(), body: JSON.stringify(body) }).then((r) => r.json());
+const put = (url, body) => fetch(`${BASE}${url}`, { method: "PUT", headers: authHeaders(), body: JSON.stringify(body) }).then((r) => r.json());
+const del = (url) => fetch(`${BASE}${url}`, { method: "DELETE", headers: authHeaders() }).then((r) => r.json());
+const upload = (url, formData) => fetch(`${BASE}${url}`, { method: "POST", headers: { Authorization: `Bearer ${localStorage.getItem("admin_token")}` }, body: formData }).then((r) => r.json());
+const uploadPut = (url, formData) => fetch(`${BASE}${url}`, { method: "PUT", headers: { Authorization: `Bearer ${localStorage.getItem("admin_token")}` }, body: formData }).then((r) => r.json());
 
-// Commandes
-export const createOrder = async (orderData) => {};
-export const getOrderById = async (id) => {};
-export const getUserOrders = async (userId) => {};
-
-// Utilisateurs
-export const login = async (email, password) => {};
-export const register = async (userData) => {};
-export const getProfile = async (token) => {};
-export const updateProfile = async (userId, data) => {};
-
-// Newsletter
-export const subscribeNewsletter = async (email) => {};
-
-// Contact
-export const sendContactForm = async (formData) => {};
+export const api = { get, post, put, del, upload, uploadPut };
