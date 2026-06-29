@@ -519,20 +519,22 @@ export default function HeroCarousel() {
             top: 0;
             left: 0;
             width: 100%;
-            height: 55%;
+            height: 42%;
           }
           .hero-img-panel::after {
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(0deg, rgba(0,0,0,0.85) 0%, transparent 60%);
+            background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 50%);
             z-index: 3;
           }
           .hero-content {
-            padding-top: 52% !important;
+            padding-top: 38% !important;
             padding-left: 20px !important;
             padding-right: 20px !important;
+            padding-bottom: 100px !important;
             align-items: flex-start !important;
+            overflow-y: auto !important;
           }
         }
       `}</style>
