@@ -521,11 +521,12 @@ export default function HeroCarousel() {
             width: 100%;
             height: 42%;
           }
+          .hero-img-panel > div:first-child { display: none !important; }
           .hero-img-panel::after {
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 50%);
+            background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, transparent 60%);
             z-index: 3;
           }
           .hero-content {
