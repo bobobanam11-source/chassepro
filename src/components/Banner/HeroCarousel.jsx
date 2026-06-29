@@ -197,6 +197,7 @@ export default function HeroCarousel() {
 
       {/* ── CONTENU ── */}
       <div
+        className="hero-content"
         style={{
           position: "relative",
           zIndex: 10,
@@ -512,7 +513,27 @@ export default function HeroCarousel() {
           to { transform: translateX(-50%); }
         }
         @media (max-width: 768px) {
-          .hero-img-panel { display: none !important; }
+          .hero-img-panel {
+            display: block !important;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 55%;
+          }
+          .hero-img-panel::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(0deg, rgba(0,0,0,0.85) 0%, transparent 60%);
+            z-index: 3;
+          }
+          .hero-content {
+            padding-top: 52% !important;
+            padding-left: 20px !important;
+            padding-right: 20px !important;
+            align-items: flex-start !important;
+          }
         }
       `}</style>
     </section>
