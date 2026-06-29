@@ -258,6 +258,7 @@ export default function HeroCarousel() {
 
           {/* Marque */}
           <p
+            className="hero-marque"
             style={{
               color: "rgba(255,255,255,0.45)",
               fontSize: 12,
@@ -547,8 +548,9 @@ export default function HeroCarousel() {
           .hero-description { display: none !important; }
           .hero-content h1 { font-size: 24px !important; margin-bottom: 8px !important; }
           .hero-content .hero-stars { margin-bottom: 8px !important; }
-          .hero-content .hero-prix { margin-bottom: 16px !important; }
-          .hero-content .hero-badges { margin-bottom: 12px !important; }
+          .hero-content .hero-prix { margin-bottom: 12px !important; }
+          .hero-content .hero-badges { margin-bottom: 10px !important; }
+          .hero-marque { margin-bottom: 6px !important; }
         }
       `}</style>
     </section>
