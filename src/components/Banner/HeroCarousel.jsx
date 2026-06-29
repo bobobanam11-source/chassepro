@@ -187,6 +187,7 @@ export default function HeroCarousel() {
 
       {/* ── OVERLAY global sombre ── */}
       <div
+        className="hero-overlay"
         style={{
           position: "absolute",
           inset: 0,
@@ -522,6 +523,7 @@ export default function HeroCarousel() {
             height: 42%;
           }
           .hero-img-panel > div:first-child { display: none !important; }
+          .hero-overlay { display: none !important; }
           .hero-img-panel::after {
             content: '';
             position: absolute;
