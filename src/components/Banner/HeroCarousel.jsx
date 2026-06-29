@@ -519,38 +519,42 @@ export default function HeroCarousel() {
         }
         @media (max-width: 768px) {
           .hero-section {
-            height: auto !important;
-            min-height: auto !important;
-            display: flex !important;
-            flex-direction: column !important;
+            height: 100vh !important;
+            min-height: 600px !important;
+            display: block !important;
           }
           .hero-bg { display: none !important; }
           .hero-overlay { display: none !important; }
           .hero-img-panel {
             display: block !important;
-            position: relative !important;
-            top: auto !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
             right: auto !important;
             width: 100% !important;
-            height: 200px !important;
-            flex-shrink: 0;
+            height: 100% !important;
           }
           .hero-img-panel > div:first-child { display: none !important; }
-          .hero-img-panel > div:nth-child(2) { display: none !important; }
+          .hero-img-panel > div:nth-child(2) {
+            background: linear-gradient(0deg, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.4) 50%, transparent 100%) !important;
+          }
           .hero-content {
-            position: relative !important;
-            background: #0d1f0f;
-            padding: 16px 20px 80px 20px !important;
+            position: absolute !important;
+            bottom: 80px !important;
+            left: 0 !important;
+            right: 0 !important;
+            top: auto !important;
+            background: transparent !important;
+            padding: 0 20px 0 20px !important;
             height: auto !important;
             align-items: flex-start !important;
-            flex: 1;
           }
           .hero-description { display: none !important; }
-          .hero-content h1 { font-size: 24px !important; margin-bottom: 8px !important; }
-          .hero-content .hero-stars { margin-bottom: 8px !important; }
-          .hero-content .hero-prix { margin-bottom: 12px !important; }
-          .hero-content .hero-badges { margin-bottom: 10px !important; }
-          .hero-marque { margin-bottom: 6px !important; }
+          .hero-content h1 { font-size: 28px !important; margin-bottom: 8px !important; }
+          .hero-stars { margin-bottom: 10px !important; }
+          .hero-prix { margin-bottom: 16px !important; }
+          .hero-badges { margin-bottom: 10px !important; }
+          .hero-marque { margin-bottom: 4px !important; }
         }
       `}</style>
     </section>
