@@ -20,6 +20,9 @@ import AdminCarousel from "./admin/pages/AdminCarousel";
 import AdminCommandes from "./admin/pages/AdminCommandes";
 import AdminParametres from "./admin/pages/AdminParametres";
 import AdminGuide from "./admin/pages/AdminGuide";
+import AdminProfil from "./admin/pages/AdminProfil";
+import ITLogin from "./admin/pages/ITLogin";
+import ITDashboard from "./admin/pages/ITDashboard";
 
 function ChatBoard() {
   const { settings } = useSettings();
@@ -77,6 +80,10 @@ export default function App() {
       <CartProvider>
         <BrowserRouter>
           <Routes>
+            {/* IT Admin */}
+            <Route path="/it-admin/login" element={<ITLogin />} />
+            <Route path="/it-admin" element={<ITDashboard />} />
+
             {/* Admin */}
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminLayout />}>
@@ -87,6 +94,7 @@ export default function App() {
               <Route path="carousel" element={<AdminCarousel />} />
               <Route path="commandes" element={<AdminCommandes />} />
               <Route path="parametres" element={<AdminParametres />} />
+              <Route path="profil" element={<AdminProfil />} />
               <Route path="guide" element={<AdminGuide />} />
             </Route>
 

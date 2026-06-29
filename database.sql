@@ -5,8 +5,16 @@
 CREATE DATABASE IF NOT EXISTS garminchasse CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE garminchasse;
 
--- Admins
+-- Admins normaux
 CREATE TABLE admins (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- IT Admins (niveau supérieur)
+CREATE TABLE it_admins (
   id INT AUTO_INCREMENT PRIMARY KEY,
   email VARCHAR(255) NOT NULL UNIQUE,
   password_hash VARCHAR(255) NOT NULL,
@@ -125,3 +133,10 @@ CREATE TABLE stats_clics (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (produit_id) REFERENCES produits(id) ON DELETE SET NULL
 );
+
+-- Insérer les comptes par défaut
+INSERT INTO admins (email, password_hash) 
+VALUES ('admin@garminchasse.fr', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi');
+
+INSERT INTO it_admins (email, password_hash) 
+VALUES ('it@garminchasse.fr', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi');

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../../services/api";
-import { Users, MousePointerClick, MessageCircle, ShoppingBag, TrendingUp, Power } from "lucide-react";
+import { Users, MousePointerClick, MessageCircle, ShoppingBag, TrendingUp } from "lucide-react";
 
 const StatCard = ({ icon: Icon, label, value, color }) => (
   <div style={{ background: "#fff", borderRadius: 16, padding: "20px 24px", boxShadow: "0 2px 12px rgba(0,0,0,0.05)", display: "flex", alignItems: "center", gap: 16 }}>
@@ -16,57 +16,14 @@ const StatCard = ({ icon: Icon, label, value, color }) => (
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
-  const [siteActif, setSiteActif] = useState(true);
-  const [confirm, setConfirm] = useState(false);
 
   useEffect(() => {
     api.get("/stats/dashboard").then(setStats);
-    api.get("/settings").then((s) => setSiteActif(s.site_actif === "true"));
   }, []);
-
-  const toggleSite = async () => {
-    const newVal = String(!siteActif);
-    await api.put("/settings/site_actif", { value: newVal });
-    setSiteActif(!siteActif);
-    setConfirm(false);
-  };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
-        <h1 style={{ fontFamily: "Playfair Display, serif", fontSize: 26, fontWeight: 800, color: "#111", margin: 0 }}>Dashboard</h1>
-        <button
-          onClick={() => setConfirm(true)}
-          style={{
-            display: "flex", alignItems: "center", gap: 8, padding: "10px 20px",
-            borderRadius: 12, border: "none", cursor: "pointer", fontWeight: 700, fontSize: 13,
-            background: siteActif ? "#EF4444" : "#22C55E", color: "#fff",
-          }}
-        >
-          <Power size={16} />
-          {siteActif ? "Mettre hors ligne" : "Remettre en ligne"}
-        </button>
-      </div>
-
-      {/* Confirmation */}
-      {confirm && (
-        <div style={{ background: siteActif ? "#FEF2F2" : "#F0FDF4", border: `1px solid ${siteActif ? "#FECACA" : "#BBF7D0"}`, borderRadius: 12, padding: 16, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
-          <p style={{ margin: 0, fontWeight: 600, color: siteActif ? "#EF4444" : "#22C55E", fontSize: 14 }}>
-            {siteActif ? "⚠️ Confirmer la mise hors ligne du site ?" : "✅ Remettre le site en ligne ?"}
-          </p>
-          <div style={{ display: "flex", gap: 8 }}>
-            <button onClick={toggleSite} style={{ padding: "8px 16px", borderRadius: 8, border: "none", cursor: "pointer", fontWeight: 700, background: siteActif ? "#EF4444" : "#22C55E", color: "#fff", fontSize: 13 }}>Confirmer</button>
-            <button onClick={() => setConfirm(false)} style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #e5e7eb", cursor: "pointer", fontWeight: 600, background: "#fff", fontSize: 13 }}>Annuler</button>
-          </div>
-        </div>
-      )}
-
-      {/* Statut site */}
-      <div style={{ background: siteActif ? "#F0FDF4" : "#FEF2F2", border: `1px solid ${siteActif ? "#BBF7D0" : "#FECACA"}`, borderRadius: 12, padding: "12px 16px" }}>
-        <p style={{ margin: 0, fontWeight: 700, color: siteActif ? "#166534" : "#EF4444", fontSize: 14 }}>
-          {siteActif ? "🟢 Site en ligne" : "🔴 Site hors ligne"}
-        </p>
-      </div>
+      <h1 style={{ fontFamily: "Playfair Display, serif", fontSize: 26, fontWeight: 800, color: "#111", margin: 0 }}>Dashboard</h1>
 
       {/* Cards stats */}
       {stats ? (

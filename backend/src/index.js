@@ -9,6 +9,9 @@ app.use(express.json());
 
 // Routes
 app.use("/api/auth", require("./routes/auth"));
+app.use("/api/it-auth", require("./routes/it-auth"));
+app.use("/api/admin-profile", require("./routes/admin-profile"));
+app.use("/api/it-profile", require("./routes/it-profile"));
 app.use("/api/settings", require("./routes/settings"));
 app.use("/api/produits", require("./routes/produits"));
 app.use("/api/categories", require("./routes/categories"));

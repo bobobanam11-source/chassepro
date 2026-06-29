@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate, Outlet } from "react-router-dom";
-import { LayoutDashboard, Package, Grid, Tag, ShoppingBag, Settings, BookOpen, Menu, X, LogOut, Image } from "lucide-react";
+import { LayoutDashboard, Package, Grid, Tag, ShoppingBag, Settings, BookOpen, Menu, X, LogOut, Image, User } from "lucide-react";
 
 const links = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
@@ -10,6 +10,7 @@ const links = [
   { to: "/admin/carousel", label: "Carousel", icon: Image },
   { to: "/admin/commandes", label: "Commandes", icon: ShoppingBag },
   { to: "/admin/parametres", label: "Paramètres", icon: Settings },
+  { to: "/admin/profil", label: "Mon profil", icon: User },
   { to: "/admin/guide", label: "Guide", icon: BookOpen },
 ];
 
