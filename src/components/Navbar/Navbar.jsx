@@ -340,6 +340,8 @@ export default function Navbar() {
           #nav-links { display: none !important; }
           .hide-mobile { display: none !important; }
           .show-mobile { display: flex !important; }
+          nav { background: rgba(13,31,15,0.95) !important; backdrop-filter: blur(14px) !important; }
+          nav span[style*="Garminchasse"], nav a span { color: white !important; }
         }
       `}</style>
     </>
