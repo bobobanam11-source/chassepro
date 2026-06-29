@@ -221,7 +221,7 @@ export default function HeroCarousel() {
           }}
         >
           {/* Badges */}
-          <div style={{ display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap" }}>
+          <div className="hero-badges" style={{ display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap" }}>
             <span
               style={{
                 background: "rgba(255,255,255,0.1)",
@@ -286,7 +286,7 @@ export default function HeroCarousel() {
           </h1>
 
           {/* Étoiles */}
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
+          <div className="hero-stars" style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
             <div style={{ display: "flex", gap: 3 }}>
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star
@@ -304,6 +304,7 @@ export default function HeroCarousel() {
 
           {/* Description */}
           <p
+            className="hero-description"
             style={{
               color: "rgba(255,255,255,0.6)",
               fontSize: 15,
@@ -316,7 +317,7 @@ export default function HeroCarousel() {
           </p>
 
           {/* Prix */}
-          <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 32 }}>
+          <div className="hero-prix" style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 32 }}>
             <span style={{ fontSize: "clamp(28px, 4vw, 42px)", fontWeight: 900, color: "#E07B2A" }}>
               {s.prix.toFixed(2)} €
             </span>
@@ -518,7 +519,7 @@ export default function HeroCarousel() {
         @media (max-width: 768px) {
           .hero-section {
             height: auto !important;
-            min-height: 100vh !important;
+            min-height: auto !important;
             display: flex !important;
             flex-direction: column !important;
           }
@@ -530,7 +531,7 @@ export default function HeroCarousel() {
             top: auto !important;
             right: auto !important;
             width: 100% !important;
-            height: 260px !important;
+            height: 200px !important;
             flex-shrink: 0;
           }
           .hero-img-panel > div:first-child { display: none !important; }
@@ -538,11 +539,16 @@ export default function HeroCarousel() {
           .hero-content {
             position: relative !important;
             background: #0d1f0f;
-            padding: 24px 20px 100px 20px !important;
+            padding: 16px 20px 80px 20px !important;
             height: auto !important;
             align-items: flex-start !important;
             flex: 1;
           }
+          .hero-description { display: none !important; }
+          .hero-content h1 { font-size: 24px !important; margin-bottom: 8px !important; }
+          .hero-content .hero-stars { margin-bottom: 8px !important; }
+          .hero-content .hero-prix { margin-bottom: 16px !important; }
+          .hero-content .hero-badges { margin-bottom: 12px !important; }
         }
       `}</style>
     </section>
