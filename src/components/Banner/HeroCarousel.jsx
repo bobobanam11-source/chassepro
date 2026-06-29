@@ -118,6 +118,7 @@ export default function HeroCarousel() {
 
   return (
     <section
+      className="hero-section"
       style={{
         position: "relative",
         width: "100%",
@@ -128,6 +129,7 @@ export default function HeroCarousel() {
     >
       {/* ── FOND dynamique ── */}
       <div
+        className="hero-bg"
         style={{
           position: "absolute",
           inset: 0,
@@ -514,30 +516,32 @@ export default function HeroCarousel() {
           to { transform: translateX(-50%); }
         }
         @media (max-width: 768px) {
+          .hero-section {
+            height: auto !important;
+            min-height: 100vh !important;
+            display: flex !important;
+            flex-direction: column !important;
+          }
+          .hero-bg { display: none !important; }
+          .hero-overlay { display: none !important; }
           .hero-img-panel {
             display: block !important;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 42%;
+            position: relative !important;
+            top: auto !important;
+            right: auto !important;
+            width: 100% !important;
+            height: 260px !important;
+            flex-shrink: 0;
           }
           .hero-img-panel > div:first-child { display: none !important; }
-          .hero-overlay { display: none !important; }
-          .hero-img-panel::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, transparent 60%);
-            z-index: 3;
-          }
+          .hero-img-panel > div:nth-child(2) { display: none !important; }
           .hero-content {
-            padding-top: 38% !important;
-            padding-left: 20px !important;
-            padding-right: 20px !important;
-            padding-bottom: 100px !important;
+            position: relative !important;
+            background: #0d1f0f;
+            padding: 24px 20px 100px 20px !important;
+            height: auto !important;
             align-items: flex-start !important;
-            overflow-y: auto !important;
+            flex: 1;
           }
         }
       `}</style>
