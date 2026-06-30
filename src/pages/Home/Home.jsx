@@ -432,61 +432,25 @@ export default function Home() {
       {/* ── MARQUES ── */}
       <section style={{ padding: "70px 24px", background: "#F5F0E8" }}>
         <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-          <p
-            style={{
-              textAlign: "center",
-              fontSize: 11,
-              fontWeight: 700,
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              color: "#9CA3AF",
-              marginBottom: 32,
-            }}
-          >
+          <p style={{ textAlign: "center", fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "#9CA3AF", marginBottom: 32 }}>
             Nos marques partenaires
           </p>
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 12,
-            }}
-          >
-            {brands.map((brand) => (
+          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center", gap: 16 }}>
+            {marques.map((marque) => (
               <div
-                key={brand.name}
-                style={{
-                  padding: "14px 28px",
-                  borderRadius: 12,
-                  background: "white",
-                  border: "1.5px solid #e5e7eb",
-                  cursor: "pointer",
-                  transition: "all 0.2s",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = brand.color;
-                  e.currentTarget.style.background = brand.color;
-                  e.currentTarget.querySelector("span").style.color = "white";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "#e5e7eb";
-                  e.currentTarget.style.background = "white";
-                  e.currentTarget.querySelector("span").style.color = brand.color;
-                }}
+                key={marque.id}
+                style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, cursor: "pointer", transition: "transform 0.2s" }}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-4px)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; }}
               >
-                <span
-                  style={{
-                    fontSize: 13,
-                    fontWeight: 800,
-                    letterSpacing: "0.12em",
-                    color: brand.color,
-                    transition: "color 0.2s",
-                  }}
-                >
-                  {brand.name}
-                </span>
+                <div style={{ width: 140, height: 100, borderRadius: 14, background: "white", border: "1.5px solid #e5e7eb", display: "flex", alignItems: "center", justifyContent: "center", padding: 16, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", overflow: "hidden" }}>
+                  {marque.logo_url ? (
+                    <img src={marque.logo_url} alt={marque.nom} style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
+                  ) : (
+                    <span style={{ fontSize: 13, fontWeight: 800, letterSpacing: "0.1em", color: "#1B3A2D", textAlign: "center" }}>{marque.nom.toUpperCase()}</span>
+                  )}
+                </div>
+                <span style={{ fontSize: 12, color: "#6B7280", fontWeight: 500 }}>{marque.nom}</span>
               </div>
             ))}
           </div>
