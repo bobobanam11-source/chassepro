@@ -43,6 +43,13 @@ app.use("/api/stats", require("./routes/stats"));
 // Health check
 app.get("/", (req, res) => res.json({ status: "ok", app: "Garminchasse API" }));
 
-app.listen(process.env.PORT || 4000, () =>
-  console.log(`🚀 API démarrée sur le port ${process.env.PORT || 4000}`)
-);
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => {
+  console.log(`🚀 API démarrée sur le port ${PORT}`);
+  // Keep-alive: ping toutes les 14 min pour éviter le sleep de Render
+  if (process.env.RENDER_EXTERNAL_URL) {
+    setInterval(() => {
+      require("https").get(process.env.RENDER_EXTERNAL_URL).on("error", () => {});
+    }, 14 * 60 * 1000);
+  }
+});
