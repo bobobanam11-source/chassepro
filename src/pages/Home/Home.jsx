@@ -471,7 +471,6 @@ export default function Home() {
           {[
             { icon: "🚚", title: "Livraison offerte", sub: "Dès 50€ d'achat, partout en France", color: "#1B3A2D" },
             { icon: "🔄", title: "Retour 30 jours", sub: "Satisfait ou remboursé sans condition", color: "#E07B2A" },
-            { icon: "💳", title: "Paiement 3x", sub: "Sans frais avec Alma ou Oney", color: "#1B3A2D" },
             { icon: "🏆", title: "SAV Expert", sub: "Conseillers chasseurs disponibles 6j/7", color: "#E07B2A" },
           ].map((item) => (
             <div
