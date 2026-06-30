@@ -27,9 +27,9 @@ export default function CategoryCard({ category }) {
       }}
     >
       {/* Image de fond */}
-      {category.image && !imgError ? (
+      {category.photo_url && !imgError ? (
         <img
-          src={category.image}
+          src={category.photo_url}
           alt={category.nom}
           onError={() => setImgError(true)}
           style={{
@@ -44,13 +44,7 @@ export default function CategoryCard({ category }) {
           }}
         />
       ) : (
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: category.gradient,
-          }}
-        />
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, #1B3A2D 0%, #0a1a0f 100%)" }} />
       )}
 
       {/* Overlay dégradé sombre */}
@@ -62,15 +56,7 @@ export default function CategoryCard({ category }) {
           transition: "background 0.3s",
         }}
       />
-      {/* Couleur de marque par-dessus */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          background: category.gradient.replace("linear-gradient", "linear-gradient").replace("100%)", "100%)").replace("135deg", "135deg"),
-          opacity: 0.35,
-        }}
-      />
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, #1B3A2D22 0%, #00000066 100%)", opacity: 0.35 }} />
 
       {/* Contenu */}
       <div
