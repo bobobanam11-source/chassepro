@@ -18,9 +18,13 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
-    api.get("/stats/dashboard").then((data) => {
-      if (data && !data.error) setStats(data);
-    }).catch(() => {});
+    const load = (retry = 0) => {
+      api.get("/stats/dashboard").then((data) => {
+        if (data && !data.error) setStats(data);
+        else if (retry < 3) setTimeout(() => load(retry + 1), 3000);
+      }).catch(() => { if (retry < 3) setTimeout(() => load(retry + 1), 3000); });
+    };
+    load();
   }, []);
 
   return (
