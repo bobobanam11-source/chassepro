@@ -27,7 +27,7 @@ export default function AdminCarousel() {
         <div style={{ display: "flex", gap: 10 }}>
           <select value={selected} onChange={(e) => setSelected(e.target.value)} style={{ flex: 1, padding: "10px 14px", borderRadius: 10, border: "1.5px solid #e5e7eb", fontSize: 14, outline: "none" }}>
             <option value="">Choisir un produit</option>
-            {produits.filter((p) => !carousel.find((c) => c.id === p.id)).map((p) => (
+            {produits.filter((p) => !carousel.find((c) => c.produit_id === p.id)).map((p) => (
               <option key={p.id} value={p.id}>{p.emoji} {p.nom}</option>
             ))}
           </select>
