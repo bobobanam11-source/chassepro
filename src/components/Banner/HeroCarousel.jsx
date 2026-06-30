@@ -1,101 +1,33 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Star, ShoppingCart } from "lucide-react";
-
-const slides = [
-  {
-    id: 1,
-    titre: "Veste Imperméable",
-    marque: "Browning",
-    categorie: "Vêtements techniques",
-    prix: 189.99,
-    prixBarre: 259.99,
-    note: 4.7,
-    nbAvis: 203,
-    badge: "Promo",
-    description: "Gore-Tex 3 couches, coupe ergonomique, 8 poches dont 2 cartouchières. La référence pour la chasse en battue.",
-    image: "https://images.pexels.com/photos/1192671/pexels-photo-1192671.jpeg?auto=compress&cs=tinysrgb&w=900",
-    emoji: "🧥",
-    accent: "#2d6a3f",
-    bg: "linear-gradient(120deg, #040d07 0%, #1B3A2D 40%, #0a0f08 100%)",
-  },
-  {
-    id: 2,
-    titre: "Bottes Pro Hunter",
-    marque: "Härkila",
-    categorie: "Chaussures & Bottes",
-    prix: 349.0,
-    prixBarre: null,
-    note: 4.9,
-    nbAvis: 87,
-    badge: "Bestseller",
-    description: "Le summum du confort pour la chasse en terrain difficile. Cuir pleine fleur, membrane GORE-TEX, semelle Vibram.",
-    image: "https://images.pexels.com/photos/2385477/pexels-photo-2385477.jpeg?auto=compress&cs=tinysrgb&w=900",
-    emoji: "👢",
-    accent: "#8B4513",
-    bg: "linear-gradient(120deg, #1a0a04 0%, #2d1b0e 40%, #0a0a0a 100%)",
-  },
-  {
-    id: 3,
-    titre: "GPS Alpha 200i",
-    marque: "Garmin",
-    categorie: "Collier GPS chien",
-    prix: 599.0,
-    prixBarre: 649.0,
-    note: 4.8,
-    nbAvis: 154,
-    badge: "Nouveau",
-    description: "Suivi GPS temps réel jusqu'à 14 km. Autonomie 20h, étanche IPX7. Compatible avec la montre Garmin.",
-    image: "https://images.pexels.com/photos/1805164/pexels-photo-1805164.jpeg?auto=compress&cs=tinysrgb&w=900",
-    emoji: "🐕",
-    accent: "#1a4a7a",
-    bg: "linear-gradient(120deg, #050912 0%, #0d1f3a 40%, #050912 100%)",
-  },
-  {
-    id: 7,
-    titre: "Carabine X-Bolt Pro",
-    marque: "Browning",
-    categorie: "Armes & Munitions",
-    prix: 1899.0,
-    prixBarre: null,
-    note: 4.9,
-    nbAvis: 67,
-    badge: "Bestseller",
-    description: "Carabine de chasse à verrou haute précision. Crosse synthétique légère, canon fluted, gâchette réglable.",
-    image: "https://images.pexels.com/photos/421129/pexels-photo-421129.jpeg?auto=compress&cs=tinysrgb&w=900",
-    emoji: "🎯",
-    accent: "#1a2a3a",
-    bg: "linear-gradient(120deg, #04080d 0%, #0f1e2d 40%, #04080d 100%)",
-  },
-  {
-    id: 13,
-    titre: "Strike Force 20MP",
-    marque: "Browning",
-    categorie: "Caméra de surveillance",
-    prix: 159.0,
-    prixBarre: 199.0,
-    note: 4.6,
-    nbAvis: 201,
-    badge: "Promo",
-    description: "Déclenchement ultra-rapide 0.22s, résolution 20 MP, vidéo HD. Autonomie 6 mois, étanchéité IP67.",
-    image: "https://images.pexels.com/photos/1252983/pexels-photo-1252983.jpeg?auto=compress&cs=tinysrgb&w=900",
-    emoji: "📷",
-    accent: "#1B3A2D",
-    bg: "linear-gradient(120deg, #040d07 0%, #1B3A2D 40%, #040d07 100%)",
-  },
-];
+import { api } from "../../services/api";
 
 const badgeColor = { Nouveau: "#3B82F6", Promo: "#E07B2A", Bestseller: "#F59E0B" };
+const bgs = [
+  "linear-gradient(120deg, #040d07 0%, #1B3A2D 40%, #0a0f08 100%)",
+  "linear-gradient(120deg, #1a0a04 0%, #2d1b0e 40%, #0a0a0a 100%)",
+  "linear-gradient(120deg, #050912 0%, #0d1f3a 40%, #050912 100%)",
+  "linear-gradient(120deg, #04080d 0%, #0f1e2d 40%, #04080d 100%)",
+  "linear-gradient(120deg, #040d07 0%, #1B3A2D 40%, #040d07 100%)",
+];
 
 export default function HeroCarousel() {
+  const [slides, setSlides] = useState([]);
   const [current, setCurrent] = useState(0);
   const [prev, setPrev] = useState(null);
-  const [dir, setDir] = useState(1); // 1 = gauche→droite, -1 = droite→gauche
+  const [dir, setDir] = useState(1);
   const [transitioning, setTransitioning] = useState(false);
+
+  useEffect(() => {
+    api.get("/carousel").then((data) => {
+      if (Array.isArray(data) && data.length > 0) setSlides(data);
+    }).catch(() => {});
+  }, []);
 
   const goTo = useCallback(
     (next, direction = 1) => {
-      if (transitioning) return;
+      if (transitioning || slides.length === 0) return;
       const idx = ((next % slides.length) + slides.length) % slides.length;
       setDir(direction);
       setPrev(current);
@@ -106,13 +38,20 @@ export default function HeroCarousel() {
         setTransitioning(false);
       }, 700);
     },
-    [current, transitioning]
+    [current, transitioning, slides.length]
   );
 
   useEffect(() => {
+    if (slides.length === 0) return;
     const t = setInterval(() => goTo(current + 1, 1), 5000);
     return () => clearInterval(t);
-  }, [current, goTo]);
+  }, [current, goTo, slides.length]);
+
+  if (slides.length === 0) return (
+    <section style={{ position: "relative", width: "100%", height: "100vh", minHeight: 600, background: "#0a1a0f", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <p style={{ color: "rgba(255,255,255,0.3)", fontSize: 16 }}>Chargement...</p>
+    </section>
+  );
 
   const s = slides[current];
 
@@ -133,7 +72,7 @@ export default function HeroCarousel() {
         style={{
           position: "absolute",
           inset: 0,
-          background: s.bg,
+          background: bgs[current % bgs.length],
           transition: "background 0.8s ease",
         }}
       />
@@ -155,7 +94,7 @@ export default function HeroCarousel() {
           style={{
             position: "absolute",
             inset: 0,
-            background: `linear-gradient(90deg, ${s.bg.match(/#[0-9a-f]{6}/i)?.[0] ?? "#040d07"} 0%, transparent 35%)`,
+            background: `linear-gradient(90deg, #040d07 0%, transparent 35%)`,
             zIndex: 2,
             transition: "background 0.8s",
           }}
@@ -171,8 +110,8 @@ export default function HeroCarousel() {
         />
         <img
           key={s.image}
-          src={s.image}
-          alt={s.titre}
+          src={s.image_url}
+          alt={s.nom}
           style={{
             width: "100%",
             height: "100%",
@@ -236,7 +175,7 @@ export default function HeroCarousel() {
                 borderRadius: 20,
               }}
             >
-              {s.categorie}
+              {s.categorie_nom || "Collection"}
             </span>
             {s.badge && (
               <span
@@ -268,7 +207,7 @@ export default function HeroCarousel() {
               marginBottom: 12,
             }}
           >
-            {s.marque}
+            {s.marque_nom || ""}
           </p>
 
           {/* Titre */}
@@ -283,7 +222,7 @@ export default function HeroCarousel() {
               letterSpacing: "-0.02em",
             }}
           >
-            {s.titre}
+            {s.nom}
           </h1>
 
           {/* Étoiles */}
@@ -293,13 +232,13 @@ export default function HeroCarousel() {
                 <Star
                   key={star}
                   size={15}
-                  fill={star <= Math.round(s.note) ? "#E07B2A" : "none"}
-                  color={star <= Math.round(s.note) ? "#E07B2A" : "rgba(255,255,255,0.25)"}
+                  fill={star <= Math.round(s.note || 0) ? "#E07B2A" : "none"}
+                  color={star <= Math.round(s.note || 0) ? "#E07B2A" : "rgba(255,255,255,0.25)"}
                 />
               ))}
             </div>
             <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 13 }}>
-              {s.note} · {s.nbAvis} avis
+              {s.note || 0} · {s.nb_avis || 0} avis
             </span>
           </div>
 
@@ -314,18 +253,18 @@ export default function HeroCarousel() {
               maxWidth: 460,
             }}
           >
-            {s.description}
+            {s.description || ""}
           </p>
 
           {/* Prix */}
           <div className="hero-prix" style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 32 }}>
             <span style={{ fontSize: "clamp(28px, 4vw, 42px)", fontWeight: 900, color: "#E07B2A" }}>
-              {s.prix.toFixed(2)} €
+              {Number(s.prix).toFixed(2)} €
             </span>
-            {s.prixBarre && (
+            {s.prix_barre && (
               <>
                 <span style={{ fontSize: 18, color: "rgba(255,255,255,0.3)", textDecoration: "line-through" }}>
-                  {s.prixBarre.toFixed(2)} €
+                  {Number(s.prix_barre).toFixed(2)} €
                 </span>
                 <span
                   style={{
@@ -337,7 +276,7 @@ export default function HeroCarousel() {
                     borderRadius: 8,
                   }}
                 >
-                  -{Math.round((1 - s.prix / s.prixBarre) * 100)}%
+                  -{Math.round((1 - s.prix / s.prix_barre) * 100)}%
                 </span>
               </>
             )}
@@ -436,7 +375,7 @@ export default function HeroCarousel() {
             <button
               key={i}
               onClick={() => goTo(i, i > current ? 1 : -1)}
-              title={slide.titre}
+              title={slide.nom}
               style={{
                 width: i === current ? 36 : 8,
                 height: 8,
