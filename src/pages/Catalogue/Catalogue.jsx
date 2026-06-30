@@ -2,14 +2,15 @@ import { useState, useEffect, useMemo } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { SlidersHorizontal, X, ChevronRight, ChevronLeft } from "lucide-react";
 import ProductCard from "../../components/ProductCard/ProductCard";
-import { products } from "../../data/products";
+import { useData } from "../../context/DataContext";
 
 const ITEMS_PER_PAGE = 9;
-const allCategories = ["Vêtements", "Chaussures", "Chien de chasse", "Optique & Repérage", "Aménagement territoire", "Armes & Munitions"];
-const allBrands = ["Browning", "Härkila", "Garmin", "Leupold", "GAMO", "Cabela's", "Beretta", "Leica"];
-const allSizes = ["S", "M", "L", "XL", "XXL", "39", "40", "41", "42", "43", "44", "45"];
 
 export default function Catalogue() {
+  const { products, categories, marques } = useData();
+  const allCategories = categories.map((c) => c.nom);
+  const allBrands = marques.map((m) => m.nom);
+  const allSizes = ["S", "M", "L", "XL", "XXL", "39", "40", "41", "42", "43", "44", "45"];
   const [searchParams] = useSearchParams();
   const [filters, setFilters] = useState({
     categories: searchParams.get("categorie") ? [searchParams.get("categorie")] : [],
@@ -33,21 +34,20 @@ export default function Catalogue() {
 
   const filtered = useMemo(() => {
     let result = [...products];
-    if (query) result = result.filter((p) => p.nom.toLowerCase().includes(query.toLowerCase()) || p.marque.toLowerCase().includes(query.toLowerCase()));
-    if (filters.categories.length) result = result.filter((p) => filters.categories.includes(p.categorie));
-    if (filters.brands.length) result = result.filter((p) => filters.brands.includes(p.marque));
-    if (filters.sizes.length) result = result.filter((p) => p.tailles.some((s) => filters.sizes.includes(s)));
+    if (query) result = result.filter((p) => p.nom?.toLowerCase().includes(query.toLowerCase()) || p.marque_nom?.toLowerCase().includes(query.toLowerCase()));
+    if (filters.categories.length) result = result.filter((p) => filters.categories.includes(p.categorie_nom));
+    if (filters.brands.length) result = result.filter((p) => filters.brands.includes(p.marque_nom));
     if (filters.minPrice) result = result.filter((p) => p.prix >= Number(filters.minPrice));
     if (filters.maxPrice) result = result.filter((p) => p.prix <= Number(filters.maxPrice));
-    if (filters.promo) result = result.filter((p) => p.prixBarre !== null);
+    if (filters.promo) result = result.filter((p) => p.prix_barre !== null && p.prix_barre !== undefined);
 
     switch (sort) {
       case "price-asc": return result.sort((a, b) => a.prix - b.prix);
       case "price-desc": return result.sort((a, b) => b.prix - a.prix);
       case "new": return result.sort((a, b) => (b.badge === "Nouveau" ? 1 : 0) - (a.badge === "Nouveau" ? 1 : 0));
-      default: return result.sort((a, b) => b.nbAvis - a.nbAvis);
+      default: return result.sort((a, b) => (b.nb_avis || 0) - (a.nb_avis || 0));
     }
-  }, [filters, sort, query]);
+  }, [filters, sort, query, products]);
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);

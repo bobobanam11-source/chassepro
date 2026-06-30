@@ -4,18 +4,7 @@ import { ArrowRight, ChevronLeft, ChevronRight, Mail, Search } from "lucide-reac
 import HeroCarousel from "../../components/Banner/HeroCarousel";
 import ProductCard from "../../components/ProductCard/ProductCard";
 import CategoryCard from "../../components/CategoryCard/CategoryCard";
-import { products, categories } from "../../data/products";
-
-const topRated = [...products].sort((a, b) => b.note - a.note).slice(0, 8);
-const promos = products.filter((p) => p.prixBarre !== null).slice(0, 4);
-const brands = [
-  { name: "GARMIN", color: "#1B3A2D" },
-  { name: "BROWNING", color: "#2d1b0e" },
-  { name: "GAMO", color: "#1a2a3a" },
-  { name: "BERETTA", color: "#3a1a1a" },
-  { name: "CABELA'S", color: "#1a3a1a" },
-  { name: "HÄRKILA", color: "#2a2a1a" },
-];
+import { useData } from "../../context/DataContext";
 
 function SectionTitle({ label, title, subtitle, light = false }) {
   return (
@@ -63,8 +52,6 @@ function SectionTitle({ label, title, subtitle, light = false }) {
   );
 }
 
-const allCategories = ["Toutes", ...categories.map((c) => c.nom)];
-
 export default function Home() {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
@@ -73,6 +60,12 @@ export default function Home() {
   const [filterPrice, setFilterPrice] = useState("");
   const scrollRef = useRef(null);
   const navigate = useNavigate();
+  const { products, categories, marques } = useData();
+
+  const topRated = [...products].sort((a, b) => (b.note || 0) - (a.note || 0)).slice(0, 8);
+  const promos = products.filter((p) => p.prix_barre !== null && p.prix_barre !== undefined).slice(0, 4);
+  const allCategories = ["Toutes", ...categories.map((c) => c.nom)];
+  const brands = marques.map((m) => ({ name: m.nom.toUpperCase(), color: "#1B3A2D" }));
 
   const handleSearch = (e) => {
     e.preventDefault();

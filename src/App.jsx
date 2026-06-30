@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import { CartProvider } from "./context/CartContext";
 import { SettingsProvider, useSettings } from "./context/SettingsContext";
+import { DataProvider } from "./context/DataContext";
 import Navbar from "./components/Navbar/Navbar";
 import Footer from "./components/Footer/Footer";
 import Home from "./pages/Home/Home";
@@ -77,6 +78,7 @@ function SiteLayout() {
 export default function App() {
   return (
     <SettingsProvider>
+      <DataProvider>
       <CartProvider>
         <BrowserRouter>
           <Routes>
@@ -117,6 +119,7 @@ export default function App() {
           </Routes>
         </BrowserRouter>
       </CartProvider>
+      </DataProvider>
     </SettingsProvider>
   );
 }
