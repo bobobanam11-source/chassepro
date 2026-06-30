@@ -33,9 +33,14 @@ export default function ProductCard({ product }) {
     navigate(`/produit/${product.id}`);
   };
 
-  const discount = product.prixBarre
-    ? Math.round((1 - product.prix / product.prixBarre) * 100)
-    : null;
+  const prix = Number(product.prix) || 0;
+  const prixBarre = Number(product.prix_barre || product.prixBarre) || null;
+  const discount = prixBarre ? Math.round((1 - prix / prixBarre) * 100) : null;
+  const marque = product.marque_nom || product.marque || "";
+  const couleurFond = product.couleur_fond || product.couleurFond || "#f5f5f5";
+  const imageUrl = product.image_url || product.image || null;
+  const nbAvis = product.nb_avis || product.nbAvis || 0;
+  const note = Number(product.note) || 0;
 
   return (
     <div
@@ -60,10 +65,10 @@ export default function ProductCard({ product }) {
     >
       {/* Zone image */}
       <div style={{ position: "relative", height: 240, flexShrink: 0, overflow: "hidden", background: "#f5f5f5" }}>
-        {product.image && !imgError ? (
+        {imageUrl && !imgError ? (
           <>
             <img
-              src={product.image}
+              src={imageUrl}
               alt={product.nom}
               onError={() => setImgError(true)}
               style={{
@@ -91,7 +96,7 @@ export default function ProductCard({ product }) {
             style={{
               width: "100%",
               height: "100%",
-              background: `radial-gradient(ellipse at 40% 30%, rgba(255,255,255,0.12) 0%, transparent 60%), linear-gradient(145deg, ${product.couleurFond} 0%, #0a0a0a 100%)`,
+              background: `radial-gradient(ellipse at 40% 30%, rgba(255,255,255,0.12) 0%, transparent 60%), linear-gradient(145deg, ${couleurFond} 0%, #0a0a0a 100%)`,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -122,7 +127,7 @@ export default function ProductCard({ product }) {
               {product.badge}
             </span>
           )}
-          {discount && (
+          {discount > 0 && (
             <span
               style={{
                 background: "#EF4444",
@@ -223,7 +228,7 @@ export default function ProductCard({ product }) {
       {/* Infos */}
       <div style={{ padding: "14px 16px 18px", display: "flex", flexDirection: "column", flex: 1 }}>
         <p style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.12em", color: "#E07B2A", marginBottom: 5 }}>
-          {product.marque}
+          {marque}
         </p>
         <h3
           style={{
@@ -240,21 +245,21 @@ export default function ProductCard({ product }) {
           <div style={{ display: "flex", gap: 2 }}>
             {[1, 2, 3, 4, 5].map((s) => (
               <Star key={s} size={12}
-                fill={s <= Math.round(product.note) ? "#E07B2A" : "none"}
-                color={s <= Math.round(product.note) ? "#E07B2A" : "#D1D5DB"}
+                fill={s <= Math.round(note) ? "#E07B2A" : "none"}
+                color={s <= Math.round(note) ? "#E07B2A" : "#D1D5DB"}
               />
             ))}
           </div>
-          <span style={{ fontSize: 11, color: "#9CA3AF" }}>({product.nbAvis})</span>
+          <span style={{ fontSize: 11, color: "#9CA3AF" }}>({nbAvis})</span>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <span style={{ fontSize: 19, fontWeight: 800, color: "#1B3A2D" }}>
-            {product.prix.toFixed(2)} €
+            {prix.toFixed(2)} €
           </span>
-          {product.prixBarre && (
+          {prixBarre && (
             <span style={{ fontSize: 13, color: "#9CA3AF", textDecoration: "line-through" }}>
-              {product.prixBarre.toFixed(2)} €
+              {prixBarre.toFixed(2)} €
             </span>
           )}
         </div>

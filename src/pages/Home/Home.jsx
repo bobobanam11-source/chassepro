@@ -63,7 +63,7 @@ export default function Home() {
   const { products, categories, marques } = useData();
 
   const topRated = [...products].sort((a, b) => (b.note || 0) - (a.note || 0)).slice(0, 8);
-  const promos = products.filter((p) => p.prix_barre !== null && p.prix_barre !== undefined).slice(0, 4);
+  const promos = products.filter((p) => p.prix_barre !== null && p.prix_barre !== undefined && Number(p.prix_barre) > 0).slice(0, 4);
   const allCategories = ["Toutes", ...categories.map((c) => c.nom)];
   const brands = marques.map((m) => ({ name: m.nom.toUpperCase(), color: "#1B3A2D" }));
 
@@ -365,7 +365,7 @@ export default function Home() {
             }}
           >
             {promos.map((p) => {
-              const disc = Math.round((1 - p.prix / p.prixBarre) * 100);
+              const disc = Math.round((1 - p.prix / p.prix_barre) * 100);
               return (
                 <Link
                   key={p.id}
@@ -400,7 +400,7 @@ export default function Home() {
                       height: 64,
                       borderRadius: 12,
                       flexShrink: 0,
-                      background: `linear-gradient(135deg, ${p.couleurFond} 0%, ${p.couleurFond}88 100%)`,
+                      background: `linear-gradient(135deg, ${p.couleur_fond || "#1B3A2D"} 0%, ${p.couleur_fond || "#1B3A2D"}88 100%)`,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -411,14 +411,14 @@ export default function Home() {
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p style={{ fontSize: 10, fontWeight: 700, color: "#E07B2A", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>
-                      {p.marque}
+                      {p.marque_nom || p.marque}
                     </p>
                     <p style={{ fontSize: 13, fontWeight: 600, color: "white", lineHeight: 1.3, marginBottom: 8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {p.nom}
                     </p>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ fontSize: 16, fontWeight: 800, color: "#E07B2A" }}>{p.prix.toFixed(2)} €</span>
-                      <span style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", textDecoration: "line-through" }}>{p.prixBarre.toFixed(2)} €</span>
+                      <span style={{ fontSize: 16, fontWeight: 800, color: "#E07B2A" }}>{Number(p.prix).toFixed(2)} €</span>
+                      <span style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", textDecoration: "line-through" }}>{Number(p.prix_barre).toFixed(2)} €</span>
                       <span style={{ fontSize: 10, fontWeight: 700, background: "#E07B2A", color: "white", padding: "2px 6px", borderRadius: 10 }}>-{disc}%</span>
                     </div>
                   </div>
