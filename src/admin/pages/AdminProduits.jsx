@@ -169,13 +169,19 @@ export default function AdminProduits() {
                 </div>
               </div>
 
-              {/* Badge */}
-              <div>
-                <label style={{ fontSize: 12, fontWeight: 700, color: "#374151", display: "block", marginBottom: 6 }}>Badge <span style={{ color: "#9CA3AF", fontWeight: 400 }}>optionnel</span></label>
-                <select value={form.badge} onChange={set("badge")} style={iStyle}>
-                  <option value="">Aucun badge</option>
-                  <option>Nouveau</option><option>Promo</option><option>Bestseller</option>
-                </select>
+              {/* Badge + Note */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: "#374151", display: "block", marginBottom: 6 }}>Badge <span style={{ color: "#9CA3AF", fontWeight: 400 }}>optionnel</span></label>
+                  <select value={form.badge} onChange={set("badge")} style={iStyle}>
+                    <option value="">Aucun badge</option>
+                    <option>Nouveau</option><option>Promo</option><option>Bestseller</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: "#374151", display: "block", marginBottom: 6 }}>Note ⭐ (0 à 5)</label>
+                  <input type="number" min="0" max="5" step="0.1" value={form.note || ""} onChange={set("note")} placeholder="Ex: 4.5" style={iStyle} />
+                </div>
               </div>
 
               {/* Photo principale */}
