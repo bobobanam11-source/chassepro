@@ -1,182 +1,160 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { Star, Heart, ShoppingCart, ChevronRight, Truck, RefreshCw, Shield, Minus, Plus } from "lucide-react";
-import { products } from "../../data/products";
-import ProductCard from "../../components/ProductCard/ProductCard";
+import { Star, ShoppingCart, ChevronRight, Truck, RefreshCw, Shield, Minus, Plus } from "lucide-react";
 import { useCart } from "../../context/CartContext";
-
-const thumbnailColors = ["#1B3A2D", "#2d5a40", "#0f2318", "#3a4a2d"];
+import { useData } from "../../context/DataContext";
+import { api } from "../../services/api";
+import ProductCard from "../../components/ProductCard/ProductCard";
 
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const product = products.find((p) => p.id === Number(id));
   const { addToCart } = useCart();
+  const { products } = useData();
 
-  const [selectedTaille, setSelectedTaille] = useState(product?.tailles[0] || "");
-  const [selectedCouleur, setSelectedCouleur] = useState(product?.couleurs[0] || "");
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedTaille, setSelectedTaille] = useState("");
+  const [selectedCouleur, setSelectedCouleur] = useState(null);
   const [quantity, setQuantity] = useState(1);
-  const [liked, setLiked] = useState(false);
   const [activeTab, setActiveTab] = useState("description");
   const [added, setAdded] = useState(false);
-  const [activeThumb, setActiveThumb] = useState(0);
+  const [activeImg, setActiveImg] = useState(0);
 
-  if (!product) {
-    return (
-      <div className="pt-28 min-h-screen flex flex-col items-center justify-center gap-4 text-gray-500">
-        <p className="text-5xl">🔍</p>
-        <p className="text-xl font-semibold">Produit introuvable</p>
-        <button onClick={() => navigate("/catalogue")} className="text-orange underline text-sm">
-          Retour au catalogue
-        </button>
-      </div>
-    );
-  }
+  useEffect(() => {
+    setLoading(true);
+    api.get(`/produits/${id}`).then((p) => {
+      setProduct(p);
+      setSelectedTaille(p.tailles?.[0]?.valeurs?.[0] || "");
+      setSelectedCouleur(p.couleurs?.[0] || null);
+      setLoading(false);
+    }).catch(() => setLoading(false));
+  }, [id]);
 
-  const similar = products.filter((p) => p.categorie === product.categorie && p.id !== product.id).slice(0, 4);
-  const discount = product.prixBarre ? Math.round((1 - product.prix / product.prixBarre) * 100) : null;
+  if (loading) return <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}><p style={{ color: "#9CA3AF" }}>Chargement...</p></div>;
+
+  if (!product) return (
+    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16 }}>
+      <p style={{ fontSize: 48 }}>🔍</p>
+      <p style={{ fontSize: 18, fontWeight: 600, color: "#374151" }}>Produit introuvable</p>
+      <button onClick={() => navigate("/catalogue")} style={{ color: "#E07B2A", textDecoration: "underline", background: "none", border: "none", cursor: "pointer" }}>Retour au catalogue</button>
+    </div>
+  );
+
+  // Construire la galerie : photo principale + photos couleur active + photos supplémentaires
+  const buildGallery = () => {
+    const imgs = [];
+    if (product.image_url) imgs.push(product.image_url);
+    if (selectedCouleur?.image_url && !imgs.includes(selectedCouleur.image_url)) imgs.push(selectedCouleur.image_url);
+    product.images?.forEach(img => { if (!imgs.includes(img.image_url)) imgs.push(img.image_url); });
+    return imgs;
+  };
+
+  const gallery = buildGallery();
+  const currentImg = gallery[activeImg] || null;
+  const discount = product.prix_barre ? Math.round((1 - product.prix / product.prix_barre) * 100) : null;
+  const tailles = product.tailles?.[0]?.valeurs || [];
+  const similar = products.filter((p) => p.categorie_id === product.categorie_id && p.id !== product.id).slice(0, 4);
+
+  const handleCouleur = (c) => {
+    setSelectedCouleur(c);
+    if (c.image_url) {
+      const newGallery = buildGalleryForCouleur(c);
+      const idx = newGallery.indexOf(c.image_url);
+      setActiveImg(idx >= 0 ? idx : 0);
+    }
+  };
+
+  const buildGalleryForCouleur = (couleur) => {
+    const imgs = [];
+    if (product.image_url) imgs.push(product.image_url);
+    if (couleur?.image_url && !imgs.includes(couleur.image_url)) imgs.push(couleur.image_url);
+    product.images?.forEach(img => { if (!imgs.includes(img.image_url)) imgs.push(img.image_url); });
+    return imgs;
+  };
 
   const handleAddToCart = () => {
-    addToCart(product, selectedTaille, selectedCouleur, quantity);
+    addToCart({ ...product, taille: selectedTaille, couleur: selectedCouleur?.nom || "" }, selectedTaille, selectedCouleur?.nom || "", quantity);
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
 
   return (
-    <div className="pt-20 min-h-screen bg-gray-50">
+    <div style={{ paddingTop: 80, minHeight: "100vh", background: "#f9fafb" }}>
       {/* Fil d'ariane */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <nav className="flex items-center gap-2 text-sm text-gray-500">
-          <Link to="/" className="hover:text-forest">Accueil</Link>
+      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "16px 24px" }}>
+        <nav style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "#9CA3AF" }}>
+          <Link to="/" style={{ color: "#9CA3AF", textDecoration: "none" }}>Accueil</Link>
           <ChevronRight size={14} />
-          <Link to="/catalogue" className="hover:text-forest">Catalogue</Link>
+          <Link to="/catalogue" style={{ color: "#9CA3AF", textDecoration: "none" }}>Catalogue</Link>
           <ChevronRight size={14} />
-          <Link to={`/catalogue?categorie=${encodeURIComponent(product.categorie)}`} className="hover:text-forest">
-            {product.categorie}
-          </Link>
-          <ChevronRight size={14} />
-          <span className="text-gray-900 truncate max-w-xs">{product.nom}</span>
+          <span style={{ color: "#111", fontWeight: 500 }}>{product.nom}</span>
         </nav>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        {/* Layout 2 colonnes */}
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
-            {/* Colonne gauche : images */}
-            <div className="p-6 lg:p-8">
+      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 24px 60px" }}>
+        <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 20px rgba(0,0,0,0.06)", overflow: "hidden" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0 }} className="product-grid">
+
+            {/* Galerie */}
+            <div style={{ padding: 32 }}>
               {/* Image principale */}
-              <div
-                className="rounded-xl overflow-hidden mb-4"
-                style={{ height: 380 }}
-              >
-                <div
-                  style={{
-                    background: `linear-gradient(135deg, ${thumbnailColors[activeThumb]} 0%, ${product.couleurFond} 100%)`,
-                    width: "100%",
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 16,
-                  }}
-                >
-                  <span style={{ fontSize: 100 }}>{product.emoji}</span>
-                  <span style={{ color: "#F5F0E8", fontSize: 13, fontWeight: 600, letterSpacing: "0.08em" }}>
-                    {product.marque.toUpperCase()}
-                  </span>
-                </div>
+              <div style={{ borderRadius: 16, overflow: "hidden", marginBottom: 12, height: 380, background: "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                {currentImg ? (
+                  <img src={currentImg} alt={product.nom} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                ) : (
+                  <span style={{ fontSize: 80 }}>📦</span>
+                )}
               </div>
 
               {/* Miniatures */}
-              <div className="grid grid-cols-4 gap-3">
-                {thumbnailColors.map((color, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setActiveThumb(i)}
-                    className={`rounded-lg overflow-hidden border-2 transition-all ${
-                      activeThumb === i ? "border-forest" : "border-transparent hover:border-gray-200"
-                    }`}
-                    style={{ height: 72 }}
-                  >
-                    <div
-                      style={{
-                        background: `linear-gradient(135deg, ${color} 0%, ${color}99 100%)`,
-                        width: "100%",
-                        height: "100%",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: 24,
-                      }}
-                    >
-                      {product.emoji}
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Colonne droite : infos */}
-            <div className="p-6 lg:p-8 lg:border-l border-gray-100">
-              <Link
-                to={`/catalogue?marque=${product.marque}`}
-                className="text-xs font-bold text-orange uppercase tracking-widest hover:underline"
-              >
-                {product.marque}
-              </Link>
-              <h1 className="font-playfair text-2xl lg:text-3xl font-bold text-gray-900 mt-2 mb-3 leading-tight">
-                {product.nom}
-              </h1>
-
-              {/* Note */}
-              <div className="flex items-center gap-3 mb-4">
-                <div className="flex">
-                  {[1, 2, 3, 4, 5].map((s) => (
-                    <Star
-                      key={s}
-                      size={16}
-                      fill={s <= Math.round(product.note) ? "#E07B2A" : "none"}
-                      color={s <= Math.round(product.note) ? "#E07B2A" : "#d1d5db"}
-                    />
+              {gallery.length > 1 && (
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  {gallery.map((img, i) => (
+                    <button key={i} onClick={() => setActiveImg(i)} style={{ width: 72, height: 72, borderRadius: 10, overflow: "hidden", border: activeImg === i ? "2px solid #1B3A2D" : "2px solid transparent", cursor: "pointer", padding: 0, background: "#f5f5f5" }}>
+                      <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    </button>
                   ))}
                 </div>
-                <span className="text-orange font-semibold text-sm">{product.note}</span>
-                <span className="text-gray-400 text-sm">({product.nbAvis} avis)</span>
-                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${product.stock > 5 ? "bg-green-100 text-green-700" : "bg-orange/10 text-orange"}`}>
-                  {product.stock > 5 ? "En stock" : `Plus que ${product.stock}`}
-                </span>
-              </div>
+              )}
+            </div>
+
+            {/* Infos */}
+            <div style={{ padding: 32, borderLeft: "1px solid #f0f0f0" }}>
+              {product.marque_nom && (
+                <p style={{ fontSize: 11, fontWeight: 700, color: "#E07B2A", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 8 }}>{product.marque_nom}</p>
+              )}
+              <h1 style={{ fontFamily: "Playfair Display, serif", fontSize: "clamp(20px,3vw,28px)", fontWeight: 800, color: "#111", marginBottom: 12, lineHeight: 1.3 }}>{product.nom}</h1>
+
+              {/* Note */}
+              {product.note > 0 && (
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
+                  <div style={{ display: "flex", gap: 2 }}>
+                    {[1,2,3,4,5].map(s => <Star key={s} size={15} fill={s <= Math.round(product.note) ? "#E07B2A" : "none"} color={s <= Math.round(product.note) ? "#E07B2A" : "#d1d5db"} />)}
+                  </div>
+                  <span style={{ fontSize: 13, color: "#E07B2A", fontWeight: 600 }}>{product.note}</span>
+                  {product.nb_avis > 0 && <span style={{ fontSize: 13, color: "#9CA3AF" }}>({product.nb_avis} avis)</span>}
+                </div>
+              )}
 
               {/* Prix */}
-              <div className="flex items-baseline gap-3 mb-6">
-                <span className="text-3xl font-bold text-orange">{product.prix.toFixed(2)} €</span>
-                {product.prixBarre && (
+              <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 24 }}>
+                <span style={{ fontSize: 32, fontWeight: 900, color: "#E07B2A" }}>{Number(product.prix).toFixed(2)} €</span>
+                {product.prix_barre && (
                   <>
-                    <span className="text-gray-400 line-through text-lg">{product.prixBarre.toFixed(2)} €</span>
-                    <span className="bg-red-100 text-red-600 text-xs font-bold px-2 py-0.5 rounded-full">-{discount}%</span>
+                    <span style={{ fontSize: 18, color: "#9CA3AF", textDecoration: "line-through" }}>{Number(product.prix_barre).toFixed(2)} €</span>
+                    <span style={{ background: "#FEE2E2", color: "#DC2626", fontSize: 12, fontWeight: 700, padding: "2px 8px", borderRadius: 20 }}>-{discount}%</span>
                   </>
                 )}
               </div>
 
               {/* Tailles */}
-              {product.tailles.length > 0 && (
-                <div className="mb-4">
-                  <p className="text-sm font-semibold text-gray-700 mb-2">
-                    Taille : <span className="text-forest">{selectedTaille}</span>
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {product.tailles.map((t) => (
-                      <button
-                        key={t}
-                        onClick={() => setSelectedTaille(t)}
-                        className={`px-3 py-2 rounded-lg text-sm font-medium border transition-all ${
-                          selectedTaille === t
-                            ? "bg-forest text-white border-forest"
-                            : "border-gray-200 text-gray-600 hover:border-forest hover:text-forest"
-                        }`}
-                      >
+              {tailles.length > 0 && (
+                <div style={{ marginBottom: 20 }}>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: "#374151", marginBottom: 8 }}>Taille : <span style={{ color: "#1B3A2D" }}>{selectedTaille}</span></p>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                    {tailles.map((t) => (
+                      <button key={t} onClick={() => setSelectedTaille(t)} style={{ padding: "8px 16px", borderRadius: 10, border: selectedTaille === t ? "2px solid #1B3A2D" : "1.5px solid #e5e7eb", background: selectedTaille === t ? "#1B3A2D" : "#fff", color: selectedTaille === t ? "#fff" : "#374151", fontWeight: 600, fontSize: 13, cursor: "pointer" }}>
                         {t}
                       </button>
                     ))}
@@ -185,76 +163,40 @@ export default function ProductDetail() {
               )}
 
               {/* Couleurs */}
-              {product.couleurs.length > 0 && (
-                <div className="mb-4">
-                  <p className="text-sm font-semibold text-gray-700 mb-2">Couleur</p>
-                  <div className="flex gap-3">
+              {product.couleurs?.length > 0 && (
+                <div style={{ marginBottom: 20 }}>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: "#374151", marginBottom: 8 }}>Couleur : <span style={{ color: "#1B3A2D" }}>{selectedCouleur?.nom || ""}</span></p>
+                  <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                     {product.couleurs.map((c) => (
-                      <button
-                        key={c}
-                        onClick={() => setSelectedCouleur(c)}
-                        style={{ backgroundColor: c }}
-                        className={`w-8 h-8 rounded-full border-4 transition-all ${
-                          selectedCouleur === c ? "border-gray-900 scale-110" : "border-transparent hover:border-gray-300"
-                        }`}
-                      />
+                      <button key={c.id} onClick={() => handleCouleur(c)} title={c.nom} style={{ width: 32, height: 32, borderRadius: "50%", background: c.code_hex, border: selectedCouleur?.id === c.id ? "3px solid #111" : "2px solid #e5e7eb", cursor: "pointer", transition: "transform 0.15s", transform: selectedCouleur?.id === c.id ? "scale(1.15)" : "scale(1)" }} />
                     ))}
                   </div>
                 </div>
               )}
 
               {/* Quantité */}
-              <div className="mb-6">
-                <p className="text-sm font-semibold text-gray-700 mb-2">Quantité</p>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                    className="w-10 h-10 rounded-lg border border-gray-200 flex items-center justify-center hover:border-forest hover:text-forest transition-colors"
-                  >
-                    <Minus size={16} />
-                  </button>
-                  <span className="w-12 text-center font-semibold text-lg">{quantity}</span>
-                  <button
-                    onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
-                    className="w-10 h-10 rounded-lg border border-gray-200 flex items-center justify-center hover:border-forest hover:text-forest transition-colors"
-                  >
-                    <Plus size={16} />
-                  </button>
+              <div style={{ marginBottom: 24 }}>
+                <p style={{ fontSize: 13, fontWeight: 700, color: "#374151", marginBottom: 8 }}>Quantité</p>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <button onClick={() => setQuantity(q => Math.max(1, q - 1))} style={{ width: 36, height: 36, borderRadius: 8, border: "1.5px solid #e5e7eb", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Minus size={15} /></button>
+                  <span style={{ fontSize: 18, fontWeight: 700, minWidth: 32, textAlign: "center" }}>{quantity}</span>
+                  <button onClick={() => setQuantity(q => q + 1)} style={{ width: 36, height: 36, borderRadius: 8, border: "1.5px solid #e5e7eb", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Plus size={15} /></button>
                 </div>
               </div>
 
               {/* CTA */}
-              <div className="flex gap-3 mb-6">
-                <button
-                  onClick={handleAddToCart}
-                  className={`flex-1 flex items-center justify-center gap-2 py-4 px-6 rounded-xl font-semibold text-sm transition-all duration-200 ${
-                    added ? "bg-green-500 text-white" : "bg-orange hover:bg-orange-dark text-white shadow-lg hover:shadow-orange/30"
-                  }`}
-                >
-                  <ShoppingCart size={18} />
-                  {added ? "Ajouté au panier ✓" : "Ajouter au panier"}
-                </button>
-                <button
-                  onClick={() => setLiked(!liked)}
-                  className={`w-14 h-14 rounded-xl border-2 flex items-center justify-center transition-all ${
-                    liked ? "border-orange bg-orange/10 text-orange" : "border-gray-200 text-gray-400 hover:border-orange hover:text-orange"
-                  }`}
-                >
-                  <Heart size={20} fill={liked ? "#E07B2A" : "none"} />
-                </button>
-              </div>
+              <button onClick={handleAddToCart} style={{ width: "100%", padding: "15px", borderRadius: 14, border: "none", background: added ? "#22C55E" : "#E07B2A", color: "#fff", fontWeight: 700, fontSize: 15, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 16, transition: "background 0.2s" }}>
+                <ShoppingCart size={18} />
+                {added ? "Ajouté au panier ✓" : "Ajouter au panier"}
+              </button>
 
               {/* Avantages */}
-              <div className="grid grid-cols-3 gap-3 pt-4 border-t border-gray-100">
-                {[
-                  { icon: Truck, label: "Livraison offerte", sub: "dès 50€" },
-                  { icon: RefreshCw, label: "Retour gratuit", sub: "30 jours" },
-                  { icon: Shield, label: "Garantie", sub: "2 ans" },
-                ].map(({ icon: Icon, label, sub }) => (
-                  <div key={label} className="text-center">
-                    <Icon size={20} className="text-forest mx-auto mb-1" />
-                    <p className="text-xs font-medium text-gray-700">{label}</p>
-                    <p className="text-xs text-gray-400">{sub}</p>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, paddingTop: 16, borderTop: "1px solid #f0f0f0" }}>
+                {[{ icon: Truck, label: "Livraison offerte", sub: "dès 50€" }, { icon: RefreshCw, label: "Retour gratuit", sub: "30 jours" }, { icon: Shield, label: "Garantie", sub: "2 ans" }].map(({ icon: Icon, label, sub }) => (
+                  <div key={label} style={{ textAlign: "center" }}>
+                    <Icon size={18} color="#1B3A2D" style={{ margin: "0 auto 4px" }} />
+                    <p style={{ fontSize: 11, fontWeight: 600, color: "#374151", margin: 0 }}>{label}</p>
+                    <p style={{ fontSize: 11, color: "#9CA3AF", margin: 0 }}>{sub}</p>
                   </div>
                 ))}
               </div>
@@ -262,81 +204,30 @@ export default function ProductDetail() {
           </div>
         </div>
 
-        {/* Onglets */}
-        <div className="bg-white rounded-2xl shadow-sm mt-6 overflow-hidden">
-          <div className="flex border-b border-gray-100">
-            {["description", "caractéristiques", "avis"].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-6 py-4 text-sm font-semibold capitalize transition-colors border-b-2 -mb-px ${
-                  activeTab === tab
-                    ? "border-forest text-forest"
-                    : "border-transparent text-gray-500 hover:text-gray-800"
-                }`}
-              >
-                {tab === "avis" ? `Avis (${product.nbAvis})` : tab.charAt(0).toUpperCase() + tab.slice(1)}
-              </button>
-            ))}
+        {/* Description */}
+        {product.description && (
+          <div style={{ background: "#fff", borderRadius: 20, padding: 28, boxShadow: "0 2px 20px rgba(0,0,0,0.06)", marginTop: 20 }}>
+            <h2 style={{ fontFamily: "Playfair Display, serif", fontSize: 20, fontWeight: 800, color: "#111", marginBottom: 12 }}>Description</h2>
+            <p style={{ color: "#4B5563", lineHeight: 1.8, fontSize: 14 }}>{product.description}</p>
           </div>
-          <div className="p-6 lg:p-8">
-            {activeTab === "description" && (
-              <p className="text-gray-600 leading-relaxed">{product.description}</p>
-            )}
-            {activeTab === "caractéristiques" && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {Object.entries(product.caracteristiques).map(([k, v]) => (
-                  <div key={k} className="flex items-center justify-between py-3 px-4 bg-gray-50 rounded-lg">
-                    <span className="text-sm font-semibold text-gray-700">{k}</span>
-                    <span className="text-sm text-gray-600">{v}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-            {activeTab === "avis" && (
-              <div className="space-y-4">
-                {[
-                  { nom: "Pierre M.", note: 5, date: "12 mars 2025", text: "Excellent produit, je le recommande vivement. Qualité au rendez-vous." },
-                  { nom: "Sophie L.", note: 4, date: "3 mars 2025", text: "Très bon rapport qualité/prix. Taille conforme, livraison rapide." },
-                  { nom: "Jean-Claude B.", note: 5, date: "15 fév. 2025", text: "Parfait pour la chasse à l'approche. Très solide, imperméable comme annoncé." },
-                ].map((avis, i) => (
-                  <div key={i} className="border-b border-gray-100 pb-4 last:border-0">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-forest text-cream rounded-full flex items-center justify-center text-xs font-bold">
-                          {avis.nom.charAt(0)}
-                        </div>
-                        <span className="font-semibold text-sm">{avis.nom}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="flex">
-                          {[1,2,3,4,5].map((s) => (
-                            <Star key={s} size={12} fill={s <= avis.note ? "#E07B2A" : "none"} color={s <= avis.note ? "#E07B2A" : "#d1d5db"} />
-                          ))}
-                        </div>
-                        <span className="text-xs text-gray-400">{avis.date}</span>
-                      </div>
-                    </div>
-                    <p className="text-sm text-gray-600">{avis.text}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
+        )}
 
         {/* Produits similaires */}
         {similar.length > 0 && (
-          <div className="mt-12">
-            <h2 className="font-playfair text-2xl font-bold text-gray-900 mb-6">Produits similaires</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {similar.map((p) => (
-                <ProductCard key={p.id} product={p} />
-              ))}
+          <div style={{ marginTop: 40 }}>
+            <h2 style={{ fontFamily: "Playfair Display, serif", fontSize: 22, fontWeight: 800, color: "#111", marginBottom: 20 }}>Produits similaires</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 16 }}>
+              {similar.map((p) => <ProductCard key={p.id} product={p} />)}
             </div>
           </div>
         )}
       </div>
+
+      <style>{`
+        @media (max-width: 768px) {
+          .product-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   );
 }
