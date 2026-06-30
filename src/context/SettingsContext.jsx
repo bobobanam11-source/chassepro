@@ -8,7 +8,13 @@ export function SettingsProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get("/settings").then((s) => { setSettings(s); setLoading(false); });
+    api.get("/settings").then((s) => {
+      setSettings(s);
+      setLoading(false);
+    }).catch(() => {
+      setSettings({});
+      setLoading(false);
+    });
   }, []);
 
   useEffect(() => {

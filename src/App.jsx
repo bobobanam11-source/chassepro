@@ -61,7 +61,11 @@ function ChatBoard() {
 
 function SiteLayout() {
   const { settings, loading } = useSettings();
-  if (loading) return null;
+  if (loading) return (
+    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <p style={{ color: "#9CA3AF" }}>Chargement...</p>
+    </div>
+  );
   if (settings?.site_actif === "false") return <SiteOff />;
   return (
     <div className="flex flex-col min-h-screen">
