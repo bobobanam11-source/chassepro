@@ -21,7 +21,7 @@ export default function AdminLayout() {
 
   useEffect(() => {
     if (!localStorage.getItem("admin_token")) navigate("/admin/login");
-  }, []);
+  }, [location.pathname]);
 
   const logout = () => { localStorage.removeItem("admin_token"); navigate("/admin/login"); };
   const isActive = (link) => link.exact ? location.pathname === link.to : location.pathname.startsWith(link.to);
