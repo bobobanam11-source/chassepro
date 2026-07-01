@@ -8,7 +8,7 @@ export default function CategoryCard({ category }) {
 
   return (
     <Link
-      to={`/catalogue?categorie=${encodeURIComponent(category.nom)}`}
+      to={`/categories/${encodeURIComponent(category.nom)}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{

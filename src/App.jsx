@@ -5,7 +5,7 @@ import { DataProvider } from "./context/DataContext";
 import Navbar from "./components/Navbar/Navbar";
 import Footer from "./components/Footer/Footer";
 import Home from "./pages/Home/Home";
-import Catalogue from "./pages/Catalogue/Catalogue";
+import Categories from "./pages/Categories/Categories";
 import ProductDetail from "./pages/ProductDetail/ProductDetail";
 import Cart from "./pages/Cart/Cart";
 import Contact from "./pages/Contact/Contact";
@@ -107,8 +107,9 @@ export default function App() {
             {/* Site public */}
             <Route element={<SiteLayout />}>
               <Route path="/" element={<Home />} />
-              <Route path="/categories" element={<Catalogue />} />
-              <Route path="/catalogue" element={<Catalogue />} />
+              <Route path="/categories" element={<Categories />} />
+              <Route path="/categories/:nom" element={<Categories />} />
+              <Route path="/catalogue" element={<Categories />} />
               <Route path="/produit/:id" element={<ProductDetail />} />
               <Route path="/panier" element={<Cart />} />
               <Route path="/contact" element={<Contact />} />
