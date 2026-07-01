@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /it-admin
+
+Sitemap: https://chassepro.vercel.app/sitemap.xml
