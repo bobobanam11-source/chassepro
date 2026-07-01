@@ -5,8 +5,8 @@ import { useCart } from "../../context/CartContext";
 
 const navLinks = [
   { to: "/", label: "Accueil", exact: true },
-  { to: "/catalogue", label: "Catalogue", exact: false },
-  { to: "/catalogue?promo=true", label: "Promotions", exact: false, promo: true },
+  { to: "/categories", label: "Catégories", exact: false },
+  { to: "/categories?promo=true", label: "Promotions", exact: false, promo: true },
   { to: "/contact", label: "Contact", exact: true },
 ];
 

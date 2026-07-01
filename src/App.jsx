@@ -107,6 +107,7 @@ export default function App() {
             {/* Site public */}
             <Route element={<SiteLayout />}>
               <Route path="/" element={<Home />} />
+              <Route path="/categories" element={<Catalogue />} />
               <Route path="/catalogue" element={<Catalogue />} />
               <Route path="/produit/:id" element={<ProductDetail />} />
               <Route path="/panier" element={<Cart />} />

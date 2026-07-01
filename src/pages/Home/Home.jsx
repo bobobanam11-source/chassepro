@@ -73,7 +73,7 @@ export default function Home() {
     if (search.trim()) params.set("q", search.trim());
     if (filterCat !== "Toutes") params.set("categorie", filterCat);
     if (filterPrice) params.set("prix", filterPrice);
-    navigate(`/catalogue?${params.toString()}`);
+    navigate(`/categories?${params.toString()}`);
   };
 
   const scroll = (dir) => {
@@ -195,7 +195,7 @@ export default function Home() {
               subtitle="Explorez chaque discipline, équipez-vous en expert"
             />
             <Link
-              to="/catalogue"
+              to="/categories"
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -338,7 +338,7 @@ export default function Home() {
               light
             />
             <Link
-              to="/catalogue?promo=true"
+              to="/categories?promo=true"
               style={{
                 display: "inline-flex",
                 alignItems: "center",

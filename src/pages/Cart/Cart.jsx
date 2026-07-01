@@ -22,10 +22,10 @@ export default function Cart() {
           <h2 className="font-playfair text-2xl font-bold text-gray-900 mb-3">Votre panier est vide</h2>
           <p className="text-gray-500 text-sm mb-8">Découvrez notre catalogue et ajoutez des produits à votre panier.</p>
           <Link
-            to="/catalogue"
+            to="/categories"
             className="inline-flex items-center gap-2 bg-orange text-white font-semibold px-8 py-3 rounded-xl hover:bg-orange-dark transition-colors"
           >
-            Voir le catalogue
+            Voir les catégories
           </Link>
         </div>
       </div>
@@ -136,7 +136,7 @@ export default function Cart() {
 
             {/* Retour catalogue */}
             <Link
-              to="/catalogue"
+              to="/categories"
               className="inline-flex items-center gap-2 text-forest text-sm font-semibold hover:gap-3 transition-all mt-2"
             >
               <ArrowLeft size={16} />

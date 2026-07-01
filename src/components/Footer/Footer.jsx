@@ -27,7 +27,7 @@ export default function Footer() {
             {categories.map((cat) => (
               <li key={cat.id}>
                 <Link
-                  to={`/catalogue?categorie=${encodeURIComponent(cat.nom)}`}
+                  to={`/categories?categorie=${encodeURIComponent(cat.nom)}`}
                   style={{ color: "rgba(245,240,232,0.55)", textDecoration: "none", fontSize: 13, transition: "color 0.15s" }}
                   onMouseEnter={(e) => { e.currentTarget.style.color = "#E07B2A"; }}
                   onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(245,240,232,0.55)"; }}
