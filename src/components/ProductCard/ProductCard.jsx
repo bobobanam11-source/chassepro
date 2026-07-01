@@ -250,7 +250,7 @@ export default function ProductCard({ product }) {
               />
             ))}
           </div>
-          <span style={{ fontSize: 11, color: "#9CA3AF" }}>({nbAvis})</span>
+          <span style={{ fontSize: 11, color: "#9CA3AF" }}>{nbAvis > 0 ? `(${nbAvis})` : ""}</span>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
