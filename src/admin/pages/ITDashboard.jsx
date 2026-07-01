@@ -16,6 +16,7 @@ const StatCard = ({ icon: Icon, label, value, color }) => (
 
 export default function ITDashboard() {
   const [stats, setStats] = useState(null);
+  const [visiteurs, setVisiteurs] = useState([]);
   const [siteActif, setSiteActif] = useState(true);
   const [confirm, setConfirm] = useState(false);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
@@ -42,6 +43,10 @@ export default function ITDashboard() {
 
     fetchStats();
     fetchSettings();
+
+    fetch(`${import.meta.env.VITE_API_URL || "http://localhost:4000/api"}/stats/visiteurs`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem("it_admin_token")}` }
+    }).then(r => r.json()).then(data => { if (Array.isArray(data)) setVisiteurs(data); }).catch(() => {});
   }, []);
 
   const toggleSite = async () => {
@@ -178,6 +183,33 @@ export default function ITDashboard() {
             </div>
           </div>
         )}
+
+        {/* Visiteurs par pays/ville */}
+        <div style={{ background: "#1a1a1a", borderRadius: 16, padding: 24, border: "1px solid #374151", marginTop: 24 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>🌍 Visiteurs par pays / ville</h3>
+          {visiteurs.length === 0 ? (
+            <p style={{ color: "#6B7280", fontSize: 13 }}>Aucune donnée géographique pour l'instant.</p>
+          ) : (
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid #374151" }}>
+                  <th style={{ textAlign: "left", padding: "8px 12px", color: "#9CA3AF", fontWeight: 600 }}>Pays</th>
+                  <th style={{ textAlign: "left", padding: "8px 12px", color: "#9CA3AF", fontWeight: 600 }}>Ville</th>
+                  <th style={{ textAlign: "right", padding: "8px 12px", color: "#9CA3AF", fontWeight: 600 }}>Visiteurs</th>
+                </tr>
+              </thead>
+              <tbody>
+                {visiteurs.map((v, i) => (
+                  <tr key={i} style={{ borderBottom: "1px solid #1f1f1f" }}>
+                    <td style={{ padding: "10px 12px", color: "#fff" }}>{v.pays}</td>
+                    <td style={{ padding: "10px 12px", color: "#9CA3AF" }}>{v.ville || "—"}</td>
+                    <td style={{ padding: "10px 12px", color: "#EF4444", fontWeight: 700, textAlign: "right" }}>{v.total}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
 
         {/* Modal changement mot de passe */}
         {showPasswordForm && (

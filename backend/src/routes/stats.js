@@ -6,8 +6,14 @@ const auth = require("../middleware/auth");
 router.post("/visite", async (req, res) => {
   try {
     const { session_id, page } = req.body;
-    const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
-    await db.query("INSERT INTO stats_visites (session_id, ip, page) VALUES (?,?,?)", [session_id, ip, page]);
+    const ip = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "").split(",")[0].trim();
+    let pays = null, ville = null;
+    try {
+      const r = await fetch(`http://ip-api.com/json/${ip}?fields=country,city&lang=fr`);
+      const geo = await r.json();
+      if (geo.country) { pays = geo.country; ville = geo.city || null; }
+    } catch {}
+    await db.query("INSERT INTO stats_visites (session_id, ip, page, pays, ville) VALUES (?,?,?,?,?)", [session_id, ip, page, pays, ville]);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -46,6 +52,23 @@ router.get("/dashboard", auth, async (req, res) => {
     res.json({ visiteurs, clics_commander, clics_chatboard, commandes_today, commandes_month, ca_month, visites7j, commandes7j });
   } catch (err) {
     console.error("GET /stats/dashboard error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET visiteurs avec pays/ville (IT admin uniquement)
+router.get("/visiteurs", auth, async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT pays, ville, COUNT(DISTINCT session_id) AS total
+       FROM stats_visites
+       WHERE pays IS NOT NULL
+       GROUP BY pays, ville
+       ORDER BY total DESC
+       LIMIT 50`
+    );
+    res.json(rows);
+  } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });

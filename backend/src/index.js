@@ -55,9 +55,15 @@ app.get("/api/debug", async (req, res) => {
 });
 
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`🚀 API démarrée sur le port ${PORT}`);
-  // Keep-alive: ping toutes les 14 min pour éviter le sleep de Render
+  // Ajouter colonnes pays/ville si elles n'existent pas
+  try {
+    const db = require("./config/db");
+    await db.query("ALTER TABLE stats_visites ADD COLUMN IF NOT EXISTS pays VARCHAR(100) DEFAULT NULL");
+    await db.query("ALTER TABLE stats_visites ADD COLUMN IF NOT EXISTS ville VARCHAR(100) DEFAULT NULL");
+  } catch {}
+  // Keep-alive
   if (process.env.RENDER_EXTERNAL_URL) {
     setInterval(() => {
       require("https").get(process.env.RENDER_EXTERNAL_URL).on("error", () => {});

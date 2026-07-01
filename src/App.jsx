@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
+import { useEffect } from "react";
 import { CartProvider } from "./context/CartContext";
 import { SettingsProvider, useSettings } from "./context/SettingsContext";
 import { DataProvider } from "./context/DataContext";
@@ -62,6 +63,15 @@ function ChatBoard() {
 
 function SiteLayout() {
   const { settings, loading } = useSettings();
+
+  useEffect(() => {
+    let sid = sessionStorage.getItem("sid");
+    if (!sid) { sid = Math.random().toString(36).slice(2); sessionStorage.setItem("sid", sid); }
+    fetch(`${import.meta.env.VITE_API_URL || "http://localhost:4000/api"}/stats/visite`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ session_id: sid, page: window.location.pathname }),
+    }).catch(() => {});
+  }, []);
   if (loading) return (
     <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <p style={{ color: "#9CA3AF" }}>Chargement...</p>

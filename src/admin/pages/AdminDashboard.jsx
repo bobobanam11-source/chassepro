@@ -39,7 +39,6 @@ export default function AdminDashboard() {
             <StatCard icon={MousePointerClick} label="Clics Commander" value={stats.clics_commander} color="#E07B2A" />
             <StatCard icon={MessageCircle} label="Clics WhatsApp" value={stats.clics_chatboard} color="#25D366" />
             <StatCard icon={ShoppingBag} label="Commandes ce mois" value={stats.commandes_month} color="#1B3A2D" />
-            <StatCard icon={TrendingUp} label="CA ce mois (€)" value={`${Number(stats.ca_month).toFixed(2)} €`} color="#F59E0B" />
           </div>
 
           {/* Mini graphique visites 7j */}
