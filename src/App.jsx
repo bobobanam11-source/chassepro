@@ -6,6 +6,7 @@ import Navbar from "./components/Navbar/Navbar";
 import Footer from "./components/Footer/Footer";
 import Home from "./pages/Home/Home";
 import Categories from "./pages/Categories/Categories";
+import Marques from "./pages/Marques/Marques";
 import ProductDetail from "./pages/ProductDetail/ProductDetail";
 import Cart from "./pages/Cart/Cart";
 import Contact from "./pages/Contact/Contact";
@@ -110,6 +111,8 @@ export default function App() {
               <Route path="/categories" element={<Categories />} />
               <Route path="/categories/:nom" element={<Categories />} />
               <Route path="/catalogue" element={<Categories />} />
+              <Route path="/marques" element={<Marques />} />
+              <Route path="/marques/:nom" element={<Marques />} />
               <Route path="/produit/:id" element={<ProductDetail />} />
               <Route path="/panier" element={<Cart />} />
               <Route path="/contact" element={<Contact />} />

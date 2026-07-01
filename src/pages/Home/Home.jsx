@@ -432,14 +432,20 @@ export default function Home() {
       {/* ── MARQUES ── */}
       <section style={{ padding: "70px 24px", background: "#F5F0E8" }}>
         <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-          <p style={{ textAlign: "center", fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "#9CA3AF", marginBottom: 32 }}>
-            Nos marques partenaires
-          </p>
-          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center", gap: 16 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 32 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "#9CA3AF", margin: 0 }}>
+              Nos marques partenaires
+            </p>
+            <Link to="/marques" style={{ fontSize: 13, fontWeight: 700, color: "#1B3A2D", textDecoration: "none", display: "flex", alignItems: "center", gap: 4, border: "1.5px solid #1B3A2D", padding: "6px 14px", borderRadius: 8 }}>
+              Voir plus <ArrowRight size={13} />
+            </Link>
+          </div>
+          <div style={{ display: "flex", gap: 16, overflowX: "auto", paddingBottom: 8 }} className="marques-row">
             {marques.map((marque) => (
-              <div
+              <Link
                 key={marque.id}
-                style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, cursor: "pointer", transition: "transform 0.2s" }}
+                to={`/marques/${encodeURIComponent(marque.nom)}`}
+                style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, textDecoration: "none", flexShrink: 0, transition: "transform 0.2s" }}
                 onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-4px)"; }}
                 onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; }}
               >
@@ -451,10 +457,11 @@ export default function Home() {
                   )}
                 </div>
                 <span style={{ fontSize: 12, color: "#6B7280", fontWeight: 500 }}>{marque.nom}</span>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
+        <style>{`.marques-row::-webkit-scrollbar { display: none; }`}</style>
       </section>
 
       {/* ── AVANTAGES ── */}

@@ -26,10 +26,6 @@ const sections = [
     content: `1. Allez dans "Paramètres" → section "Couleurs"\n2. Utilisez le sélecteur de couleur ou entrez un code HEX\n3. Couleur primaire : couleur principale (menus, boutons)\n4. Couleur secondaire : couleur d'accent (prix, badges)\n5. Cliquez "OK" pour chaque couleur — le changement s'applique en temps réel`,
   },
   {
-    title: "🔴 Activer / désactiver le site",
-    content: `1. Allez dans "Dashboard"\n2. Cliquez "Mettre hors ligne" (bouton rouge)\n3. Confirmez — le site affiche une page ❌ "Site indisponible" à tous les visiteurs\n4. Pour remettre en ligne, cliquez "Remettre en ligne" (bouton vert)\n⚠️ Même vous verrez la page hors service si vous visitez le site normal — seul /admin/login reste accessible`,
-  },
-  {
     title: "📊 Lire les statistiques",
     content: `Le Dashboard affiche :\n• Visiteurs uniques : nombre de sessions distinctes\n• Clics Commander : combien de fois le bouton "Commander" a été cliqué\n• Clics WhatsApp : combien de fois le chatboard a été cliqué\n• Commandes ce mois : nombre de commandes enregistrées\n• CA ce mois : chiffre d'affaires estimé (basé sur les commandes WhatsApp)\n• Graphique visites 7 jours : tendance des visites quotidiennes`,
   },

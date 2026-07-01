@@ -3,7 +3,7 @@ import { api } from "../../services/api";
 import { Plus, Pencil, Trash2, X } from "lucide-react";
 
 const iStyle = { padding: "10px 14px", borderRadius: 10, border: "1.5px solid #e5e7eb", fontSize: 14, outline: "none", width: "100%", boxSizing: "border-box", background: "#fff" };
-const empty = { nom: "", description: "", prix: "", prix_barre: "", marque_id: "", categorie_id: "", badge: "", actif: "1", tailles: { type: "alphanum", valeurs: [] }, couleurs: [] };
+const empty = { nom: "", description: "", prix: "", prix_barre: "", marque_id: "", categorie_id: "", badge: "", actif: "1", tailles: { type: "alphanum", valeurs: [] }, couleurs: [], nouvelle_marque_nom: "", nouvelle_marque_image: null };
 
 export default function AdminProduits() {
   const [produits, setProduits] = useState([]);
@@ -16,6 +16,7 @@ export default function AdminProduits() {
   const [extraImages, setExtraImages] = useState([]);
   const [newCouleur, setNewCouleur] = useState({ nom: "", code_hex: "#ffffff", imageFile: null });
   const [loading, setLoading] = useState(false);
+  const [nouvelleMarqueImage, setNouvelleMarqueImage] = useState(null);
 
   const load = () => {
     api.get("/produits").then(setProduits);
@@ -27,15 +28,15 @@ export default function AdminProduits() {
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
-  const openNew = () => { setForm(empty); setEditing(null); setImageFile(null); setExtraImages([]); setShowForm(true); };
+  const openNew = () => { setForm(empty); setEditing(null); setImageFile(null); setExtraImages([]); setNouvelleMarqueImage(null); setShowForm(true); };
   const openEdit = (p) => {
     const t = p.tailles?.[0];
     const tailles = t ? {
       type: t.type_taille || t.type || "alphanum",
       valeurs: typeof t.valeurs === "string" ? JSON.parse(t.valeurs) : (t.valeurs || [])
     } : { type: "alphanum", valeurs: [] };
-    setForm({ ...p, tailles, couleurs: p.couleurs || [] });
-    setEditing(p.id); setImageFile(null); setExtraImages([]); setShowForm(true);
+    setForm({ ...p, tailles, couleurs: p.couleurs || [], nouvelle_marque_nom: "", nouvelle_marque_image: null });
+    setEditing(p.id); setImageFile(null); setExtraImages([]); setNouvelleMarqueImage(null); setShowForm(true);
   };
 
   const addCouleur = () => {
@@ -57,27 +58,33 @@ export default function AdminProduits() {
     e.preventDefault();
     setLoading(true);
     try {
+      const base = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+      let marque_id = form.marque_id;
+
+      // Créer nouvelle marque si "autre" sélectionné
+      if (form.marque_id === "autre" && form.nouvelle_marque_nom) {
+        const mfd = new FormData();
+        mfd.append("nom", form.nouvelle_marque_nom);
+        if (nouvelleMarqueImage) mfd.append("logo", nouvelleMarqueImage);
+        const res = await fetch(`${base}/marques`, { method: "POST", headers: { Authorization: `Bearer ${localStorage.getItem("admin_token")}` }, body: mfd });
+        const data = await res.json();
+        marque_id = data.id;
+        load(); // recharger les marques
+      }
+
       const fd = new FormData();
       Object.entries(form).forEach(([k, v]) => {
         if (k === "tailles") fd.append("tailles", JSON.stringify(v));
         else if (k === "couleurs") fd.append("couleurs", JSON.stringify(v.map(c => ({ nom: c.nom, code_hex: c.code_hex, image_url: c.image_url || null }))));
-        else if (k !== "images") fd.append(k, v);
+        else if (k === "marque_id") fd.append("marque_id", marque_id);
+        else if (k !== "images" && k !== "nouvelle_marque_nom" && k !== "nouvelle_marque_image") fd.append(k, v);
       });
-
       if (imageFile) fd.append("image", imageFile);
-
-      // Photos supplémentaires
       extraImages.forEach(f => fd.append("images", f));
+      form.couleurs.forEach(c => { if (c.imageFile) fd.append("couleur_images", c.imageFile); });
 
-      // Photos par couleur (seulement si fichier réel)
-      form.couleurs.forEach(c => {
-        if (c.imageFile) fd.append("couleur_images", c.imageFile);
-      });
-
-      const base = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
       const url = editing ? `${base}/produits/${editing}` : `${base}/produits`;
       await fetch(url, { method: editing ? "PUT" : "POST", headers: { Authorization: `Bearer ${localStorage.getItem("admin_token")}` }, body: fd });
-
       setShowForm(false); load();
     } catch (err) {
       alert("Erreur : " + err.message);
@@ -169,7 +176,15 @@ export default function AdminProduits() {
                   <select value={form.marque_id} onChange={set("marque_id")} style={iStyle}>
                     <option value="">Choisir...</option>
                     {marques.map((m) => <option key={m.id} value={m.id}>{m.nom}</option>)}
+                    <option value="autre">+ Autre (nouvelle marque)</option>
                   </select>
+                  {form.marque_id === "autre" && (
+                    <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 8, background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: 10, padding: 12 }}>
+                      <input value={form.nouvelle_marque_nom} onChange={(e) => setForm(f => ({ ...f, nouvelle_marque_nom: e.target.value }))} placeholder="Nom de la nouvelle marque *" style={iStyle} required />
+                      <label style={{ fontSize: 11, color: "#6B7280" }}>Logo (optionnel)</label>
+                      <input type="file" accept="image/*" onChange={(e) => setNouvelleMarqueImage(e.target.files[0])} style={iStyle} />
+                    </div>
+                  )}
                 </div>
               </div>
 
