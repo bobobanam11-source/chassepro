@@ -62,7 +62,7 @@ export function CartProvider({ children }) {
 
   const clearCart = () => dispatch({ type: "CLEAR" });
 
-  const total = state.items.reduce((sum, i) => sum + i.prix * i.quantite, 0);
+  const total = state.items.reduce((sum, i) => sum + Number(i.prix) * i.quantite, 0);
   const count = state.items.reduce((sum, i) => sum + i.quantite, 0);
 
   return (

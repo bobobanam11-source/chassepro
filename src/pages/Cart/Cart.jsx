@@ -123,9 +123,9 @@ export default function Cart() {
 
                       {/* Prix */}
                       <div className="text-right">
-                        <p className="font-bold text-orange">{(item.prix * item.quantite).toFixed(2)} €</p>
+                        <p className="font-bold text-orange">{(Number(item.prix) * item.quantite).toFixed(2)} €</p>
                         {item.quantite > 1 && (
-                          <p className="text-xs text-gray-400">{item.prix.toFixed(2)} € / unité</p>
+                          <p className="text-xs text-gray-400">{Number(item.prix).toFixed(2)} € / unité</p>
                         )}
                       </div>
                     </div>
