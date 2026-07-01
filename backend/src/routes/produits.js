@@ -62,11 +62,15 @@ router.post("/", auth, upload.fields([
 ]), async (req, res) => {
   try {
     const { nom, description, prix, prix_barre, marque_id, categorie_id, badge, note, nb_avis, emoji, couleur_fond, tailles, couleurs } = req.body;
+    const prixBarre = (!prix_barre || prix_barre === 'null' || prix_barre === '') ? null : prix_barre;
+    const marqueId = (!marque_id || marque_id === 'null' || marque_id === '') ? null : marque_id;
+    const categorieId = (!categorie_id || categorie_id === 'null' || categorie_id === '') ? null : categorie_id;
+    const badgeVal = (!badge || badge === 'null' || badge === '') ? null : badge;
     let image_url = null;
     if (req.files?.image?.[0]) image_url = await uploadToCloudinary(req.files.image[0]);
     const [result] = await db.query(
       "INSERT INTO produits (nom, description, prix, prix_barre, marque_id, categorie_id, badge, note, nb_avis, emoji, couleur_fond, image_url) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
-      [nom, description, prix, prix_barre || null, marque_id || null, categorie_id || null, badge || null, note || 0, nb_avis || 0, emoji || "", couleur_fond || "#f5f5f5", image_url]
+      [nom, description, prix, prixBarre, marqueId, categorieId, badgeVal, note || 0, nb_avis || 0, emoji || "", couleur_fond || "#f5f5f5", image_url]
     );
     const produitId = result.insertId;
     if (tailles) {
@@ -106,13 +110,17 @@ router.put("/:id", auth, upload.fields([
 ]), async (req, res) => {
   try {
     const { nom, description, prix, prix_barre, marque_id, categorie_id, badge, note, nb_avis, emoji, couleur_fond, actif, tailles, couleurs } = req.body;
+    const prixBarre = (!prix_barre || prix_barre === 'null' || prix_barre === '') ? null : prix_barre;
+    const marqueId = (!marque_id || marque_id === 'null' || marque_id === '') ? null : marque_id;
+    const categorieId = (!categorie_id || categorie_id === 'null' || categorie_id === '') ? null : categorie_id;
+    const badgeVal = (!badge || badge === 'null' || badge === '') ? null : badge;
     let image_url;
     if (req.files?.image?.[0]) image_url = await uploadToCloudinary(req.files.image[0]);
     await db.query(
       `UPDATE produits SET nom=?, description=?, prix=?, prix_barre=?, marque_id=?, categorie_id=?, badge=?, note=?, nb_avis=?, emoji=?, couleur_fond=?, actif=? ${image_url ? ", image_url=?" : ""} WHERE id=?`,
       image_url
-        ? [nom, description, prix, prix_barre || null, marque_id || null, categorie_id || null, badge || null, note || 0, nb_avis || 0, emoji || "", couleur_fond, actif, image_url, req.params.id]
-        : [nom, description, prix, prix_barre || null, marque_id || null, categorie_id || null, badge || null, note || 0, nb_avis || 0, emoji || "", couleur_fond, actif, req.params.id]
+        ? [nom, description, prix, prixBarre, marqueId, categorieId, badgeVal, note || 0, nb_avis || 0, emoji || "", couleur_fond, actif, image_url, req.params.id]
+        : [nom, description, prix, prixBarre, marqueId, categorieId, badgeVal, note || 0, nb_avis || 0, emoji || "", couleur_fond, actif, req.params.id]
     );
     if (tailles) {
       const t = JSON.parse(tailles);

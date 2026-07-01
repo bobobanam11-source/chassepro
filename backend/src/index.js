@@ -43,6 +43,17 @@ app.use("/api/stats", require("./routes/stats"));
 // Health check
 app.get("/", (req, res) => res.json({ status: "ok", app: "Garminchasse API" }));
 
+// Debug DB
+app.get("/api/debug", async (req, res) => {
+  try {
+    const db = require("./config/db");
+    const [rows] = await db.query("SELECT 1 AS ok");
+    res.json({ db: "connected", rows });
+  } catch (err) {
+    res.status(500).json({ db: "error", message: err.message, code: err.code });
+  }
+});
+
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`🚀 API démarrée sur le port ${PORT}`);
