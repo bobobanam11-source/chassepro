@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useSearchParams } from "react-router-dom";
 import { ChevronRight, ArrowLeft } from "lucide-react";
 import { useData } from "../../context/DataContext";
 import ProductCard from "../../components/ProductCard/ProductCard";
@@ -6,7 +6,39 @@ import CategoryCard from "../../components/CategoryCard/CategoryCard";
 
 export default function Categories() {
   const { nom } = useParams();
+  const [searchParams] = useSearchParams();
   const { products, categories } = useData();
+
+  // Vue promotions
+  if (!nom && searchParams.get("promo") === "true") {
+    const promos = products.filter((p) => p.prix_barre && Number(p.prix_barre) > 0);
+    return (
+      <div className="pt-16 min-h-screen bg-gray-50">
+        <div className="bg-white border-b border-gray-100 py-6 px-4">
+          <div className="max-w-7xl mx-auto">
+            <nav className="flex items-center gap-2 text-sm text-gray-500 mb-2">
+              <Link to="/" className="hover:text-forest">Accueil</Link>
+              <ChevronRight size={14} />
+              <span className="text-gray-900 font-medium">Promotions</span>
+            </nav>
+            <h1 className="font-playfair text-2xl font-bold text-gray-900">🏷️ Promotions en cours</h1>
+          </div>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {promos.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+              {promos.map((p) => <ProductCard key={p.id} product={p} />)}
+            </div>
+          ) : (
+            <div className="text-center py-20 bg-white rounded-xl">
+              <p className="text-4xl mb-4">🏷️</p>
+              <p className="text-gray-500 text-lg">Aucune promotion en cours.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   // Vue liste des catégories
   if (!nom) {
