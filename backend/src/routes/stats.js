@@ -56,18 +56,28 @@ router.get("/dashboard", auth, async (req, res) => {
   }
 });
 
-// GET visiteurs avec pays/ville (IT admin uniquement)
+// GET visiteurs avec pays/ville + montant total commandes (IT admin uniquement)
 router.get("/visiteurs", auth, async (req, res) => {
   try {
     const [rows] = await db.query(
-      `SELECT pays, ville, COUNT(DISTINCT session_id) AS total
+      `SELECT pays, ville,
+        COUNT(DISTINCT session_id) AS total,
+        (SELECT COALESCE(SUM(c.prix * c.quantite), 0) FROM commandes c
+         WHERE c.created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)) AS ca_total
        FROM stats_visites
        WHERE pays IS NOT NULL
        GROUP BY pays, ville
        ORDER BY total DESC
        LIMIT 50`
     );
-    res.json(rows);
+    const [[{ ca_total }]] = await db.query(
+      `SELECT COALESCE(SUM(prix * quantite), 0) AS ca_total FROM commandes`
+    );
+    const [commandes] = await db.query(
+      `SELECT nom_produit, prix, quantite, taille, couleur, statut, created_at
+       FROM commandes ORDER BY created_at DESC LIMIT 100`
+    );
+    res.json({ visiteurs: rows, ca_total, commandes });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

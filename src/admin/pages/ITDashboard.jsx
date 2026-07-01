@@ -17,6 +17,8 @@ const StatCard = ({ icon: Icon, label, value, color }) => (
 export default function ITDashboard() {
   const [stats, setStats] = useState(null);
   const [visiteurs, setVisiteurs] = useState([]);
+  const [caTotal, setCaTotal] = useState(0);
+  const [commandes, setCommandes] = useState([]);
   const [siteActif, setSiteActif] = useState(true);
   const [confirm, setConfirm] = useState(false);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
@@ -46,7 +48,13 @@ export default function ITDashboard() {
 
     fetch(`${import.meta.env.VITE_API_URL || "http://localhost:4000/api"}/stats/visiteurs`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("it_admin_token")}` }
-    }).then(r => r.json()).then(data => { if (Array.isArray(data)) setVisiteurs(data); }).catch(() => {});
+    }).then(r => r.json()).then(data => {
+      if (data?.visiteurs) {
+        setVisiteurs(data.visiteurs);
+        setCaTotal(data.ca_total || 0);
+        setCommandes(data.commandes || []);
+      }
+    }).catch(() => {});
   }, []);
 
   const toggleSite = async () => {
@@ -204,6 +212,46 @@ export default function ITDashboard() {
                     <td style={{ padding: "10px 12px", color: "#fff" }}>{v.pays}</td>
                     <td style={{ padding: "10px 12px", color: "#9CA3AF" }}>{v.ville || "—"}</td>
                     <td style={{ padding: "10px 12px", color: "#EF4444", fontWeight: 700, textAlign: "right" }}>{v.total}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+
+        {/* Commandes & montants */}
+        <div style={{ background: "#1a1a1a", borderRadius: 16, padding: 24, border: "1px solid #374151", marginTop: 24 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, flexWrap: "wrap", gap: 8 }}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>💰 Commandes & montants</h3>
+            <span style={{ background: "#F59E0B22", color: "#F59E0B", fontWeight: 800, fontSize: 15, padding: "6px 14px", borderRadius: 10 }}>
+              CA total : {Number(caTotal).toFixed(2)} €
+            </span>
+          </div>
+          {commandes.length === 0 ? (
+            <p style={{ color: "#6B7280", fontSize: 13 }}>Aucune commande.</p>
+          ) : (
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid #374151" }}>
+                  <th style={{ textAlign: "left", padding: "8px 10px", color: "#9CA3AF", fontWeight: 600 }}>Produit</th>
+                  <th style={{ textAlign: "right", padding: "8px 10px", color: "#9CA3AF", fontWeight: 600 }}>Prix</th>
+                  <th style={{ textAlign: "right", padding: "8px 10px", color: "#9CA3AF", fontWeight: 600 }}>Qté</th>
+                  <th style={{ textAlign: "right", padding: "8px 10px", color: "#9CA3AF", fontWeight: 600 }}>Total</th>
+                  <th style={{ textAlign: "left", padding: "8px 10px", color: "#9CA3AF", fontWeight: 600 }}>Statut</th>
+                  <th style={{ textAlign: "left", padding: "8px 10px", color: "#9CA3AF", fontWeight: 600 }}>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {commandes.map((c, i) => (
+                  <tr key={i} style={{ borderBottom: "1px solid #1f1f1f" }}>
+                    <td style={{ padding: "10px 10px", color: "#fff" }}>{c.nom_produit}</td>
+                    <td style={{ padding: "10px 10px", color: "#9CA3AF", textAlign: "right" }}>{Number(c.prix).toFixed(2)} €</td>
+                    <td style={{ padding: "10px 10px", color: "#9CA3AF", textAlign: "right" }}>{c.quantite}</td>
+                    <td style={{ padding: "10px 10px", color: "#F59E0B", fontWeight: 700, textAlign: "right" }}>{(Number(c.prix) * c.quantite).toFixed(2)} €</td>
+                    <td style={{ padding: "10px 10px" }}>
+                      <span style={{ background: c.statut === "confirmée" ? "#14532D" : c.statut === "annulée" ? "#7F1D1D" : "#1e3a5f", color: c.statut === "confirmée" ? "#22C55E" : c.statut === "annulée" ? "#EF4444" : "#60A5FA", padding: "3px 10px", borderRadius: 8, fontSize: 12, fontWeight: 600 }}>{c.statut || "en attente"}</span>
+                    </td>
+                    <td style={{ padding: "10px 10px", color: "#6B7280", fontSize: 12 }}>{new Date(c.created_at).toLocaleDateString("fr-FR")}</td>
                   </tr>
                 ))}
               </tbody>
