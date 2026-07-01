@@ -29,7 +29,12 @@ export default function AdminProduits() {
 
   const openNew = () => { setForm(empty); setEditing(null); setImageFile(null); setExtraImages([]); setShowForm(true); };
   const openEdit = (p) => {
-    setForm({ ...p, tailles: p.tailles?.[0] || { type: "alphanum", valeurs: [] }, couleurs: p.couleurs || [] });
+    const t = p.tailles?.[0];
+    const tailles = t ? {
+      type: t.type_taille || t.type || "alphanum",
+      valeurs: typeof t.valeurs === "string" ? JSON.parse(t.valeurs) : (t.valeurs || [])
+    } : { type: "alphanum", valeurs: [] };
+    setForm({ ...p, tailles, couleurs: p.couleurs || [] });
     setEditing(p.id); setImageFile(null); setExtraImages([]); setShowForm(true);
   };
 

@@ -75,7 +75,9 @@ router.post("/", auth, upload.fields([
     const produitId = result.insertId;
     if (tailles) {
       const t = JSON.parse(tailles);
-      await db.query("INSERT INTO produit_tailles (produit_id, type_taille, valeurs) VALUES (?,?,?)", [produitId, t.type, JSON.stringify(t.valeurs)]);
+      if (t && t.type) {
+        await db.query("INSERT INTO produit_tailles (produit_id, type_taille, valeurs) VALUES (?,?,?)", [produitId, t.type, JSON.stringify(t.valeurs || [])]);
+      }
     }
     if (couleurs) {
       const cols = JSON.parse(couleurs);
@@ -124,8 +126,10 @@ router.put("/:id", auth, upload.fields([
     );
     if (tailles) {
       const t = JSON.parse(tailles);
-      await db.query("DELETE FROM produit_tailles WHERE produit_id = ?", [req.params.id]);
-      await db.query("INSERT INTO produit_tailles (produit_id, type_taille, valeurs) VALUES (?,?,?)", [req.params.id, t.type, JSON.stringify(t.valeurs)]);
+      if (t && t.type) {
+        await db.query("DELETE FROM produit_tailles WHERE produit_id = ?", [req.params.id]);
+        await db.query("INSERT INTO produit_tailles (produit_id, type_taille, valeurs) VALUES (?,?,?)", [req.params.id, t.type, JSON.stringify(t.valeurs || [])]);
+      }
     }
     if (couleurs) {
       const cols = JSON.parse(couleurs);
