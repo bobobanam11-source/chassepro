@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate, Outlet } from "react-router-dom";
 import { LayoutDashboard, Package, Grid, Tag, ShoppingBag, Settings, BookOpen, Menu, X, LogOut, Image, User } from "lucide-react";
+import { useSettings } from "../../context/SettingsContext";
+import SiteOff from "../../pages/SiteOff/SiteOff";
 
 const links = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
@@ -18,6 +20,9 @@ export default function AdminLayout() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { settings } = useSettings();
+
+  if (settings?.site_actif === "false") return <SiteOff />;
 
   useEffect(() => {
     if (!localStorage.getItem("admin_token")) navigate("/admin/login");
