@@ -64,10 +64,9 @@ export default function AdminProduits() {
       // Photos supplémentaires
       extraImages.forEach(f => fd.append("images", f));
 
-      // Photos par couleur
+      // Photos par couleur (seulement si fichier réel)
       form.couleurs.forEach(c => {
         if (c.imageFile) fd.append("couleur_images", c.imageFile);
-        else fd.append("couleur_images", new Blob([]), "empty");
       });
 
       const base = import.meta.env.VITE_API_URL || "http://localhost:4000/api";

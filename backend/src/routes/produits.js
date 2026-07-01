@@ -75,8 +75,13 @@ router.post("/", auth, upload.fields([
     }
     if (couleurs) {
       const cols = JSON.parse(couleurs);
+      let imgIdx = 0;
       for (let i = 0; i < cols.length; i++) {
-        const couleur_image_url = req.files?.couleur_images?.[i] ? await uploadToCloudinary(req.files.couleur_images[i]) : null;
+        let couleur_image_url = cols[i].image_url || null;
+        if (!cols[i].image_url && req.files?.couleur_images?.[imgIdx]) {
+          couleur_image_url = await uploadToCloudinary(req.files.couleur_images[imgIdx]);
+          imgIdx++;
+        }
         await db.query("INSERT INTO produit_couleurs (produit_id, nom, code_hex, image_url) VALUES (?,?,?,?)", [produitId, cols[i].nom, cols[i].code_hex, couleur_image_url]);
       }
     }
@@ -117,10 +122,14 @@ router.put("/:id", auth, upload.fields([
     if (couleurs) {
       const cols = JSON.parse(couleurs);
       await db.query("DELETE FROM produit_couleurs WHERE produit_id = ?", [req.params.id]);
+      let imgIdx = 0;
       for (let i = 0; i < cols.length; i++) {
-        const couleur_image_url = req.files?.couleur_images?.[i]
-          ? await uploadToCloudinary(req.files.couleur_images[i])
-          : cols[i].image_url || null;
+        let couleur_image_url = cols[i].image_url || null;
+        // On n'utilise une nouvelle image que si la couleur n'en a pas déjà une
+        if (!cols[i].image_url && req.files?.couleur_images?.[imgIdx]) {
+          couleur_image_url = await uploadToCloudinary(req.files.couleur_images[imgIdx]);
+          imgIdx++;
+        }
         await db.query("INSERT INTO produit_couleurs (produit_id, nom, code_hex, image_url) VALUES (?,?,?,?)", [req.params.id, cols[i].nom, cols[i].code_hex, couleur_image_url]);
       }
     }
