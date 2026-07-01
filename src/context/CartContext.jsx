@@ -46,7 +46,10 @@ export function CartProvider({ children }) {
 
   useEffect(() => {
     const saved = localStorage.getItem("chassepro-cart");
-    if (saved) dispatch({ type: "LOAD", payload: JSON.parse(saved) });
+    if (saved) {
+      const items = JSON.parse(saved).map(i => ({ ...i, prix: Number(i.prix), prix_barre: i.prix_barre ? Number(i.prix_barre) : null }));
+      dispatch({ type: "LOAD", payload: items });
+    }
   }, []);
 
   useEffect(() => {
@@ -54,7 +57,7 @@ export function CartProvider({ children }) {
   }, [state.items]);
 
   const addToCart = (product, taille = "", couleur = "", quantite = 1) =>
-    dispatch({ type: "ADD", payload: { product, taille, couleur, quantite } });
+    dispatch({ type: "ADD", payload: { product: { ...product, prix: Number(product.prix), prix_barre: product.prix_barre ? Number(product.prix_barre) : null }, taille, couleur, quantite } });
 
   const removeFromCart = (key) => dispatch({ type: "REMOVE", payload: key });
 
